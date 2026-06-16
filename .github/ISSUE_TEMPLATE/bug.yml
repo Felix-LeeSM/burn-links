@@ -1,0 +1,42 @@
+name: Bug report
+description: Track a reproducible defect.
+title: "[Bug] "
+labels:
+  - type:bug
+  - review:needed
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is broken?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Exact steps, commands, inputs, or environment needed to reproduce.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+    validations:
+      required: true
+  - type: textarea
+    id: affected-areas
+    attributes:
+      label: Affected Areas
+      description: Which area labels should be applied?
+      placeholder: area:web, area:api, area:worker, area:storage, area:contracts, area:deploy, area:docs, area:ci, area:github, area:security
+    validations:
+      required: true
+  - type: textarea
+    id: test-plan
+    attributes:
+      label: Test Plan
+      description: What checks should fail before the fix and pass after it?
+    validations:
+      required: true

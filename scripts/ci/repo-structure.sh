@@ -15,17 +15,39 @@ require_file() {
 for guide in \
   AGENTS.md \
   .agents/AGENTS.md \
+  .agents/skills/pr-review/SKILL.md \
   .github/AGENTS.md \
+  .github/ISSUE_TEMPLATE/bug.yml \
+  .github/ISSUE_TEMPLATE/config.yml \
+  .github/ISSUE_TEMPLATE/task.yml \
+  .github/pull_request_template.md \
+  .github/workflows/review-gate.yml \
   cmd/AGENTS.md \
   contracts/AGENTS.md \
   deploy/AGENTS.md \
   docs/AGENTS.md \
   internal/AGENTS.md \
+  scripts/ci/review-gate.sh \
   scripts/AGENTS.md \
   tests/AGENTS.md \
   web/AGENTS.md; do
   require_file "$guide"
 done
+
+if [ -f .github/workflows/review-gate.yml ]; then
+  # shellcheck disable=SC2016
+  if grep -Fq 'ref: ${{ github.event.pull_request.head.sha }}' .github/workflows/review-gate.yml ||
+    grep -Fq 'ref: ${{ github.event.pull_request.head.ref }}' .github/workflows/review-gate.yml ||
+    grep -Fq 'ref: ${{ github.head_ref }}' .github/workflows/review-gate.yml; then
+    echo "repo-structure: review gate must not checkout or execute PR head code" >&2
+    failed=1
+  fi
+
+  if ! grep -Fq 'persist-credentials: false' .github/workflows/review-gate.yml; then
+    echo "repo-structure: review gate checkout must not persist credentials" >&2
+    failed=1
+  fi
+fi
 
 for forbidden in \
   common \

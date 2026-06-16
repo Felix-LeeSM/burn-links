@@ -11,6 +11,9 @@ does not exist yet, print a clear skip message and exit successfully.
 `scripts/ci/repo-structure.sh` owns static enforcement for directory rules that
 can be checked without running the application.
 
+`scripts/ci/review-gate.sh` owns PR metadata enforcement. It is run by GitHub
+Actions and depends on `GH_TOKEN`, `GH_REPO`, and `PR_NUMBER`.
+
 Do not embed credentials, production URLs, derived keys, or plaintext secret
 samples. Smoke tests may use dummy ciphertext only.
 

@@ -41,6 +41,7 @@ Required `main` policy:
 - Required status checks:
   - `Repo checks`
   - `NATS smoke`
+  - `Review gate`
 - Require the branch to be up to date before merge.
 - Require conversation resolution.
 - Enforce rules for administrators.
@@ -55,6 +56,12 @@ Merge strategy:
 
 `k3d smoke` and OCI smoke checks are not required PR checks because they are
 scheduled or manually triggered infrastructure checks.
+
+`Review gate` is a metadata-only `pull_request_target` workflow. It must not
+execute PR head code. It publishes the required `Review gate` commit status to
+the PR head SHA. It enforces linked issue, milestone, label families, PR
+template completion, PR size, sensitive-path labels, exact-head subagent review
+comments, and label-after-review ordering.
 
 ## Go Tests
 
