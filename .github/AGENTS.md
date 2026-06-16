@@ -19,6 +19,15 @@ dedicated workflow after deploy manifests and credentials exist.
 Repository policy:
 
 - `main` is protected.
-- Require PRs, `Repo checks`, and `NATS smoke` before merging.
+- Require PRs, `Repo checks`, `NATS smoke`, and `Review gate` before merging
+  after the review gate workflow is installed on `main`.
 - Do not require `k3d smoke` for PR merge.
 - Keep squash merge as the default merge strategy.
+
+Review gate policy:
+
+- Use `pull_request_target` only for metadata checks.
+- Do not checkout, build, test, or execute PR head code in review-gate jobs.
+- Keep `permissions` least-privilege.
+- `review:approved` must be applied after the latest commit.
+- `review:changes-requested` must block merge.
