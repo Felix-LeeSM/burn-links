@@ -38,8 +38,11 @@ func main() {
 	}
 
 	server := &http.Server{
-		Addr:    cfg.APIAddr,
-		Handler: httpapi.NewRouter(conn, secretStore, httpapi.Options{PayloadInlineMaxBytes: cfg.PayloadInlineMaxBytes}),
+		Addr: cfg.APIAddr,
+		Handler: httpapi.NewRouter(conn, secretStore, httpapi.Options{
+			PayloadInlineMaxBytes: cfg.PayloadInlineMaxBytes,
+			AllowedOrigin:         cfg.PublicBaseURL,
+		}),
 	}
 
 	log.Printf("burnlink-api listening on %s", cfg.APIAddr)

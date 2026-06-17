@@ -9,6 +9,7 @@ import (
 
 type Config struct {
 	Env                   string
+	PublicBaseURL         string
 	APIAddr               string
 	APIDBPath             string
 	PayloadInlineMaxBytes int64
@@ -19,6 +20,7 @@ type Config struct {
 func Load() (Config, error) {
 	cfg := Config{
 		Env:                   getenv("BURNLINK_ENV", "development"),
+		PublicBaseURL:         getenv("BURNLINK_PUBLIC_BASE_URL", "http://localhost:5173"),
 		APIAddr:               getenv("BURNLINK_API_ADDR", ":8080"),
 		APIDBPath:             getenv("BURNLINK_API_DB_PATH", "./var/api.db"),
 		PayloadInlineMaxBytes: 1048576,

@@ -3,6 +3,7 @@ package httpapi
 import (
 	"database/sql"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 
@@ -13,10 +14,12 @@ type Server struct {
 	db                    *sql.DB
 	secrets               *secrets.Store
 	payloadInlineMaxBytes int64
+	allowedOrigin         string
 }
 
 type Options struct {
 	PayloadInlineMaxBytes int64
+	AllowedOrigin         string
 }
 
 func NewRouter(db *sql.DB, secretStore *secrets.Store, opts Options) http.Handler {
@@ -29,9 +32,11 @@ func NewRouter(db *sql.DB, secretStore *secrets.Store, opts Options) http.Handle
 		db:                    db,
 		secrets:               secretStore,
 		payloadInlineMaxBytes: payloadInlineMaxBytes,
+		allowedOrigin:         strings.TrimRight(opts.AllowedOrigin, "/"),
 	}
 
 	r := chi.NewRouter()
+	r.Use(server.cors)
 	r.Get("/healthz", server.healthz)
 	r.Get("/readyz", server.readyz)
 	r.Get("/metrics", server.metrics)
@@ -39,6 +44,25 @@ func NewRouter(db *sql.DB, secretStore *secrets.Store, opts Options) http.Handle
 	r.Get("/api/secrets/{id}", server.getSecret)
 	r.Post("/api/secrets/{id}/consume", server.consumeSecret)
 	return r
+}
+
+func (s Server) cors(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		origin := strings.TrimRight(r.Header.Get("Origin"), "/")
+		if s.allowedOrigin != "" && origin == s.allowedOrigin {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+			w.Header().Set("Vary", "Origin")
+		}
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 func (s Server) healthz(w http.ResponseWriter, _ *http.Request) {
