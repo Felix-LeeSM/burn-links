@@ -13,9 +13,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Felix-LeeSM/burn-links/internal/db"
-	"github.com/Felix-LeeSM/burn-links/internal/events"
-	"github.com/Felix-LeeSM/burn-links/internal/secrets"
+	"github.com/Felix-LeeSM/flick-drop/internal/db"
+	"github.com/Felix-LeeSM/flick-drop/internal/events"
+	"github.com/Felix-LeeSM/flick-drop/internal/secrets"
 )
 
 func TestSecretHTTPFlow(t *testing.T) {
@@ -400,7 +400,7 @@ func TestCleanupSecretRequiresInternalToken(t *testing.T) {
 		resp := performJSON(t, router, http.MethodPost, "/internal/secrets/s1/cleanup", map[string]any{
 			"job_id": "job-1",
 			"reason": "expired",
-		}, map[string]string{"X-BurnLink-Internal-Token": token})
+		}, map[string]string{"X-Flick-Internal-Token": token})
 		if resp.Code != http.StatusUnauthorized {
 			t.Fatalf("cleanup status with token %q = %d, body = %s", token, resp.Code, resp.Body.String())
 		}
@@ -410,7 +410,7 @@ func TestCleanupSecretRequiresInternalToken(t *testing.T) {
 	disabledResp := performJSON(t, disabledRouter, http.MethodPost, "/internal/secrets/s1/cleanup", map[string]any{
 		"job_id": "job-1",
 		"reason": "expired",
-	}, map[string]string{"X-BurnLink-Internal-Token": "test-token"})
+	}, map[string]string{"X-Flick-Internal-Token": "test-token"})
 	if disabledResp.Code != http.StatusUnauthorized {
 		t.Fatalf("disabled cleanup status = %d, body = %s", disabledResp.Code, disabledResp.Body.String())
 	}
@@ -432,7 +432,7 @@ func TestCleanupSecretDeletesPayload(t *testing.T) {
 	cleanupResp := performJSON(t, router, http.MethodPost, "/internal/secrets/"+created.ID+"/cleanup", map[string]any{
 		"job_id": "job-1",
 		"reason": "expired",
-	}, map[string]string{"X-BurnLink-Internal-Token": "test-token"})
+	}, map[string]string{"X-Flick-Internal-Token": "test-token"})
 	if cleanupResp.Code != http.StatusOK {
 		t.Fatalf("cleanup status = %d, body = %s", cleanupResp.Code, cleanupResp.Body.String())
 	}
@@ -450,7 +450,7 @@ func TestCleanupSecretDeletesPayload(t *testing.T) {
 	secondCleanupResp := performJSON(t, router, http.MethodPost, "/internal/secrets/"+created.ID+"/cleanup", map[string]any{
 		"job_id": "job-2",
 		"reason": "retry",
-	}, map[string]string{"X-BurnLink-Internal-Token": "test-token"})
+	}, map[string]string{"X-Flick-Internal-Token": "test-token"})
 	if secondCleanupResp.Code != http.StatusOK {
 		t.Fatalf("second cleanup status = %d, body = %s", secondCleanupResp.Code, secondCleanupResp.Body.String())
 	}
@@ -470,7 +470,7 @@ func TestCleanupSecretRejectsInvalidMetadata(t *testing.T) {
 	resp := performJSON(t, router, http.MethodPost, "/internal/secrets/s1/cleanup", map[string]any{
 		"job_id": "job-1",
 		"reason": "passphrase",
-	}, map[string]string{"X-BurnLink-Internal-Token": "test-token"})
+	}, map[string]string{"X-Flick-Internal-Token": "test-token"})
 	if resp.Code != http.StatusBadRequest {
 		t.Fatalf("invalid reason status = %d, body = %s", resp.Code, resp.Body.String())
 	}
@@ -478,7 +478,7 @@ func TestCleanupSecretRejectsInvalidMetadata(t *testing.T) {
 	raw := strings.NewReader(`{"job_id":"job-1","reason":"expired","passphrase":"do-not-send"}`)
 	req := httptest.NewRequest(http.MethodPost, "/internal/secrets/s1/cleanup", raw)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-BurnLink-Internal-Token", "test-token")
+	req.Header.Set("X-Flick-Internal-Token", "test-token")
 	sensitiveResp := httptest.NewRecorder()
 	router.ServeHTTP(sensitiveResp, req)
 	if sensitiveResp.Code != http.StatusBadRequest {
@@ -519,7 +519,7 @@ func newTestRouterFixture(t *testing.T, opts Options) testRouterFixture {
 	now := time.Date(2026, 6, 17, 10, 0, 0, 0, time.UTC)
 	store.SetNowForTest(func() time.Time { return now })
 
-	outbox, err := events.NewOutboxStore(conn, "burnlink.jobs")
+	outbox, err := events.NewOutboxStore(conn, "flick.jobs")
 	if err != nil {
 		t.Fatalf("new outbox store: %v", err)
 	}

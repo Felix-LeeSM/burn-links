@@ -9,10 +9,10 @@ import (
 )
 
 func TestNATSJetStreamConsumerIntegration(t *testing.T) {
-	if os.Getenv("BURNLINK_NATS_INTEGRATION") != "1" {
-		t.Skip("set BURNLINK_NATS_INTEGRATION=1 to run against local NATS")
+	if os.Getenv("FLICK_NATS_INTEGRATION") != "1" {
+		t.Skip("set FLICK_NATS_INTEGRATION=1 to run against local NATS")
 	}
-	url := os.Getenv("BURNLINK_NATS_URL")
+	url := os.Getenv("FLICK_NATS_URL")
 	if url == "" {
 		url = "nats://127.0.0.1:4222"
 	}
@@ -29,9 +29,9 @@ func TestNATSJetStreamConsumerIntegration(t *testing.T) {
 	})
 
 	suffix := time.Now().UnixNano()
-	stream := fmt.Sprintf("BURNLINK_JOBS_CONSUMER_%d", suffix)
-	subject := fmt.Sprintf("burnlink.jobs.consumer.%d", suffix)
-	durable := "burnlink-worker-test"
+	stream := fmt.Sprintf("FLICK_JOBS_CONSUMER_%d", suffix)
+	subject := fmt.Sprintf("flick.jobs.consumer.%d", suffix)
+	durable := "flick-worker-test"
 
 	publisher, err := NewNATSJetStreamPublisher(conn)
 	if err != nil {

@@ -1,6 +1,6 @@
-# `cmd/burnlink-api/` Guide
+# `cmd/flick-api/` Guide
 
-This directory is the `burnlink-api` process entrypoint.
+This directory is the `flick-api` process entrypoint.
 
 Directory structure:
 

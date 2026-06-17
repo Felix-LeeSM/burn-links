@@ -6,7 +6,7 @@ import type {
 } from '$lib/crypto/text';
 
 export const DEFAULT_API_BASE_URL =
-	import.meta.env.PUBLIC_BURNLINK_API_BASE_URL || 'http://localhost:8080';
+	import.meta.env.PUBLIC_FLICK_API_BASE_URL || 'http://localhost:8080';
 
 export type TtlSeconds = 600 | 3600 | 86400;
 
@@ -157,7 +157,7 @@ async function requestJson<T>(
 		response = await fetcher(input, init);
 	} catch {
 		throw new SecretApiError(
-			'Could not reach BurnLink. Check your connection and try again.',
+			'Could not reach Flick. Check your connection and try again.',
 			'network_error',
 			0
 		);
@@ -199,10 +199,10 @@ function clientErrorMessage(code: string, status: number): string {
 			return 'This file is too large.';
 		case 'unauthorized':
 		case 'not_ready':
-			return 'BurnLink is not ready. Try again shortly.';
+			return 'Flick is not ready. Try again shortly.';
 		default:
 			if (status >= 500) {
-				return 'BurnLink could not complete the request. Try again.';
+				return 'Flick could not complete the request. Try again.';
 			}
 			return 'Could not complete the request. Check the input and try again.';
 	}

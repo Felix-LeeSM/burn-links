@@ -9,11 +9,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Felix-LeeSM/burn-links/internal/config"
-	"github.com/Felix-LeeSM/burn-links/internal/db"
-	"github.com/Felix-LeeSM/burn-links/internal/events"
-	"github.com/Felix-LeeSM/burn-links/internal/httpapi"
-	"github.com/Felix-LeeSM/burn-links/internal/secrets"
+	"github.com/Felix-LeeSM/flick-drop/internal/config"
+	"github.com/Felix-LeeSM/flick-drop/internal/db"
+	"github.com/Felix-LeeSM/flick-drop/internal/events"
+	"github.com/Felix-LeeSM/flick-drop/internal/httpapi"
+	"github.com/Felix-LeeSM/flick-drop/internal/secrets"
 )
 
 func main() {
@@ -76,7 +76,7 @@ func main() {
 
 	publisherErr := make(chan error, 1)
 	go func() {
-		log.Printf("burnlink-api publishing outbox subject %s to stream %s", cfg.NATSJobSubject, cfg.NATSStream)
+		log.Printf("flick-api publishing outbox subject %s to stream %s", cfg.NATSJobSubject, cfg.NATSStream)
 		publisherErr <- events.RunOutboxPublisher(ctx, outboxPublisher, events.OutboxPublisherLoopOptions{
 			Logf: log.Printf,
 		})
@@ -84,7 +84,7 @@ func main() {
 
 	serverErr := make(chan error, 1)
 	go func() {
-		log.Printf("burnlink-api listening on %s", cfg.APIAddr)
+		log.Printf("flick-api listening on %s", cfg.APIAddr)
 		serverErr <- server.ListenAndServe()
 	}()
 
@@ -123,5 +123,5 @@ func main() {
 		}
 	}
 
-	log.Print("burnlink-api stopped")
+	log.Print("flick-api stopped")
 }

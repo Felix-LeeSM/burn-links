@@ -1,15 +1,15 @@
 # Database Schema
 
-BurnLink uses separate SQLite files for service ownership.
+Flick uses separate SQLite files for service ownership.
 
 ## Ownership
 
 ```text
 api.db
-  owner: burnlink-api
+  owner: flick-api
 
 worker.db
-  owner: burnlink-worker
+  owner: flick-worker
 ```
 
 The worker must not mutate `api.db` directly. It calls internal API endpoints for

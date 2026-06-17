@@ -1,9 +1,9 @@
 ---
 name: pr-review
-description: Use when reviewing a BurnLink pull request, especially as a spawned reviewer subagent. Produces a structured, read-only review against BurnLink's issue, milestone, label, security, directory, contract, and verification rules.
+description: Use when reviewing a Flick pull request, especially as a spawned reviewer subagent. Produces a structured, read-only review against Flick's issue, milestone, label, security, directory, contract, and verification rules.
 ---
 
-# BurnLink PR Review
+# Flick PR Review
 
 Use this skill for PR review. The reviewer is read-only unless the user
 explicitly asks for fixes.
@@ -49,7 +49,7 @@ Check these in order:
 Return a concise review with this shape:
 
 ```text
-## BurnLink Subagent Review
+## Flick Subagent Review
 
 Decision: approve | changes-requested
 Head: <exact PR head SHA reviewed>

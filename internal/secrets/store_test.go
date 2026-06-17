@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Felix-LeeSM/burn-links/internal/db"
+	"github.com/Felix-LeeSM/flick-drop/internal/db"
 )
 
 func TestStoreCreateGetConsume(t *testing.T) {

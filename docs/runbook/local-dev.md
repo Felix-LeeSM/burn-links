@@ -8,7 +8,7 @@ direnv allow
 cp .env.example .env.local
 ```
 
-Edit `.env.local` for local-only secrets such as `BURNLINK_INTERNAL_TOKEN` and
+Edit `.env.local` for local-only secrets such as `FLICK_INTERNAL_TOKEN` and
 OCI development bucket settings.
 
 ## Full Stack
@@ -28,7 +28,7 @@ Compose and stops that Compose project when the task exits. Press `Ctrl-C` to
 stop API, worker, web, and any NATS instance started by the task.
 
 If you want to use a separately managed NATS instance, set
-`BURNLINK_DEV_SKIP_NATS=1` before running the task.
+`FLICK_DEV_SKIP_NATS=1` before running the task.
 
 ## NATS
 
@@ -49,9 +49,9 @@ NATS monitoring is exposed at `http://localhost:8222`.
 The API outbox publisher uses:
 
 ```text
-BURNLINK_NATS_URL
-BURNLINK_NATS_STREAM
-BURNLINK_NATS_JOB_SUBJECT
+FLICK_NATS_URL
+FLICK_NATS_STREAM
+FLICK_NATS_JOB_SUBJECT
 ```
 
 The publisher sends outbox rows to JetStream but does not carry plaintext,
@@ -62,10 +62,10 @@ passphrases, derived keys, or ciphertext bodies.
 Run the API service:
 
 ```sh
-go run ./cmd/burnlink-api
+go run ./cmd/flick-api
 ```
 
-The service listens on `BURNLINK_API_ADDR` and uses `BURNLINK_API_DB_PATH`.
+The service listens on `FLICK_API_ADDR` and uses `FLICK_API_DB_PATH`.
 Defaults come from `.mise.toml` and local overrides should live in
 `.env.local`.
 

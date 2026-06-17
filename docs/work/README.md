@@ -1,6 +1,6 @@
 # Work Notes
 
-This directory replaces sprint artifacts for BurnLink.
+This directory replaces sprint artifacts for Flick.
 
 - `active/`: in-progress work notes the agent should read before editing.
 - `done/`: completed work notes worth keeping as history.

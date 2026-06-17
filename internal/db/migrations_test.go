@@ -23,7 +23,7 @@ func TestMigrateAPICreatesOutboxEvents(t *testing.T) {
 		id, subject, payload_json, next_attempt_at, created_at, updated_at
 	) values (?, ?, ?, ?, ?, ?)`,
 		"job_1",
-		"burnlink.jobs",
+		"flick.jobs",
 		`{"job_id":"job_1","kind":"expire_secret","secret_id":"sec_1","requested_at":"2026-06-17T00:00:00Z"}`,
 		"2026-06-17T00:00:00Z",
 		"2026-06-17T00:00:00Z",

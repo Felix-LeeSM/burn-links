@@ -13,8 +13,8 @@ These packages are code boundaries, not service boundaries.
 
 Service ownership rules:
 
-- `burnlink-api` owns `api.db`.
-- `burnlink-worker` owns `worker.db`.
+- `flick-api` owns `api.db`.
+- `flick-worker` owns `worker.db`.
 - The worker must call internal API endpoints for mutations that belong to
   `api.db`.
 - Cross-service actions must be idempotent. Replaying a job after partial

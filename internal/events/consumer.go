@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	DefaultConsumerDurable = "burnlink-worker"
+	DefaultConsumerDurable = "flick-worker"
 	DefaultConsumerBatch   = 8
 	DefaultMaxDeliver      = 3
 	DefaultFetchWait       = 2 * time.Second

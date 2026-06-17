@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Felix-LeeSM/burn-links/internal/events"
+	"github.com/Felix-LeeSM/flick-drop/internal/events"
 	"github.com/nats-io/nats.go"
 )
 

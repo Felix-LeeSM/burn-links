@@ -1,6 +1,6 @@
-# BurnLink Web
+# Flick Web
 
-SvelteKit frontend for BurnLink.
+SvelteKit frontend for Flick.
 
 ## Commands
 

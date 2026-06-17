@@ -1,38 +1,38 @@
 # Service Topology
 
-BurnLink starts as a small self-hosted MSA.
+Flick starts as a small self-hosted MSA.
 
 ## Runtime Services
 
 ```text
 Browser
-  -> burnlink-web
-  -> burnlink-api
+  -> flick-web
+  -> flick-api
   -> NATS JetStream
-  -> burnlink-worker
+  -> flick-worker
 ```
 
-### `burnlink-web`
+### `flick-web`
 
 SvelteKit frontend. It handles browser-side encryption and decryption. It may be
 served as static assets or a small Node runtime, depending on the selected
 SvelteKit adapter.
 
-### `burnlink-api`
+### `flick-api`
 
 Public HTTP/JSON API for secret creation, metadata lookup, and verified one-time
 open operations. It is the only service that mutates `api.db` directly.
 
 The API also publishes async jobs through an outbox table and NATS JetStream.
 
-### `burnlink-worker`
+### `flick-worker`
 
 Long-running worker Deployment. It consumes NATS JetStream jobs and performs
 cleanup, OCI object deletion, retry bookkeeping, and future backup/restore
 verification work.
 
 The worker owns `worker.db`. For changes that belong to `api.db`, it calls
-internal API endpoints on `burnlink-api`.
+internal API endpoints on `flick-api`.
 
 ### `nats`
 
@@ -44,7 +44,7 @@ bodies.
 
 - Browser to web/API: HTTP.
 - API to worker: NATS JetStream jobs.
-- Worker to API: internal HTTP endpoints protected by `BURNLINK_INTERNAL_TOKEN`.
+- Worker to API: internal HTTP endpoints protected by `FLICK_INTERNAL_TOKEN`.
 - API/worker to OCI: OCI Object Storage SDK when enabled.
 
 Do not add gRPC in the initial version. It is a future option if internal HTTP

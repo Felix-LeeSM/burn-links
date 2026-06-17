@@ -7,10 +7,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/Felix-LeeSM/burn-links/internal/config"
-	"github.com/Felix-LeeSM/burn-links/internal/db"
-	"github.com/Felix-LeeSM/burn-links/internal/events"
-	"github.com/Felix-LeeSM/burn-links/internal/worker"
+	"github.com/Felix-LeeSM/flick-drop/internal/config"
+	"github.com/Felix-LeeSM/flick-drop/internal/db"
+	"github.com/Felix-LeeSM/flick-drop/internal/events"
+	"github.com/Felix-LeeSM/flick-drop/internal/worker"
 )
 
 func main() {
@@ -76,9 +76,9 @@ func main() {
 		log.Fatalf("create worker runner: %v", err)
 	}
 
-	log.Printf("burnlink-worker consuming subject %s from stream %s", cfg.NATSJobSubject, cfg.NATSStream)
+	log.Printf("flick-worker consuming subject %s from stream %s", cfg.NATSJobSubject, cfg.NATSStream)
 	if err := runner.Run(ctx); err != nil {
 		log.Fatalf("run worker: %v", err)
 	}
-	log.Print("burnlink-worker stopped")
+	log.Print("flick-worker stopped")
 }

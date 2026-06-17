@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Felix-LeeSM/burn-links/internal/events"
+	"github.com/Felix-LeeSM/flick-drop/internal/events"
 )
 
 func TestProcessorMarksSuccessfulJob(t *testing.T) {

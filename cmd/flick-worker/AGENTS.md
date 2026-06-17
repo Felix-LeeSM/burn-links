@@ -1,6 +1,6 @@
-# `cmd/burnlink-worker/` Guide
+# `cmd/flick-worker/` Guide
 
-This directory is the `burnlink-worker` process entrypoint.
+This directory is the `flick-worker` process entrypoint.
 
 Directory structure:
 

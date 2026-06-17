@@ -1,14 +1,14 @@
 # Deployment Target
 
-BurnLink is designed for small self-hosted Kubernetes deployments and should be
+Flick is designed for small self-hosted Kubernetes deployments and should be
 able to run within an OCI Always Free-style environment.
 
 ## Baseline Runtime
 
 ```text
-burnlink-web      SvelteKit frontend
-burnlink-api      Go HTTP API
-burnlink-worker   Go NATS worker
+flick-web      SvelteKit frontend
+flick-api      Go HTTP API
+flick-worker   Go NATS worker
 nats              NATS JetStream broker
 ```
 
@@ -26,19 +26,19 @@ OCI Object Storage bucket for larger ciphertext
 Expected generic manifests:
 
 ```text
-Namespace/burnlink
-Deployment/burnlink-web
-Deployment/burnlink-api
-Deployment/burnlink-worker
-Service/burnlink-web
-Service/burnlink-api
+Namespace/flick
+Deployment/flick-web
+Deployment/flick-api
+Deployment/flick-worker
+Service/flick-web
+Service/flick-api
 Service/nats
 StatefulSet/nats
-PersistentVolumeClaim/burnlink-data
+PersistentVolumeClaim/flick-data
 PersistentVolumeClaim/nats-data
-ConfigMap/burnlink-config
-Secret/burnlink-secrets
-Ingress/burnlink
+ConfigMap/flick-config
+Secret/flick-secrets
+Ingress/flick
 ```
 
 ## Initial Resource Budget
@@ -46,15 +46,15 @@ Ingress/burnlink
 Start small and verify with real metrics.
 
 ```text
-burnlink-web:
+flick-web:
   request: 32Mi memory, 10m cpu
   limit:   128Mi memory, 100m cpu
 
-burnlink-api:
+flick-api:
   request: 64Mi memory, 25m cpu
   limit:   256Mi memory, 250m cpu
 
-burnlink-worker:
+flick-worker:
   request: 64Mi memory, 25m cpu
   limit:   256Mi memory, 250m cpu
 
@@ -80,9 +80,9 @@ limits, and available block volume capacity before production use.
 Initial replica counts:
 
 ```text
-burnlink-web: 1
-burnlink-api: 1
-burnlink-worker: 1
+flick-web: 1
+flick-api: 1
+flick-worker: 1
 nats: 1
 ```
 

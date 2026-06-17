@@ -3,7 +3,7 @@ package config
 import "testing"
 
 func TestLoadUsesDefaults(t *testing.T) {
-	clearBurnLinkEnv(t)
+	clearFlickEnv(t)
 
 	cfg, err := Load()
 	if err != nil {
@@ -30,11 +30,11 @@ func TestLoadUsesDefaults(t *testing.T) {
 	if cfg.NATSURL != "nats://127.0.0.1:4222" {
 		t.Fatalf("NATSURL = %q, want nats://127.0.0.1:4222", cfg.NATSURL)
 	}
-	if cfg.NATSStream != "BURNLINK_JOBS" {
-		t.Fatalf("NATSStream = %q, want BURNLINK_JOBS", cfg.NATSStream)
+	if cfg.NATSStream != "FLICK_JOBS" {
+		t.Fatalf("NATSStream = %q, want FLICK_JOBS", cfg.NATSStream)
 	}
-	if cfg.NATSJobSubject != "burnlink.jobs" {
-		t.Fatalf("NATSJobSubject = %q, want burnlink.jobs", cfg.NATSJobSubject)
+	if cfg.NATSJobSubject != "flick.jobs" {
+		t.Fatalf("NATSJobSubject = %q, want flick.jobs", cfg.NATSJobSubject)
 	}
 	if cfg.PayloadInlineMaxBytes != 1048576 {
 		t.Fatalf("PayloadInlineMaxBytes = %d, want 1048576", cfg.PayloadInlineMaxBytes)
@@ -42,32 +42,32 @@ func TestLoadUsesDefaults(t *testing.T) {
 }
 
 func TestLoadRejectsDefaultTTLOutsideAllowedSet(t *testing.T) {
-	clearBurnLinkEnv(t)
-	t.Setenv("BURNLINK_DEFAULT_TTL_SECONDS", "60")
-	t.Setenv("BURNLINK_ALLOWED_TTL_SECONDS", "600,3600,86400")
+	clearFlickEnv(t)
+	t.Setenv("FLICK_DEFAULT_TTL_SECONDS", "60")
+	t.Setenv("FLICK_ALLOWED_TTL_SECONDS", "600,3600,86400")
 
 	if _, err := Load(); err == nil {
 		t.Fatal("expected config load error")
 	}
 }
 
-func clearBurnLinkEnv(t *testing.T) {
+func clearFlickEnv(t *testing.T) {
 	t.Helper()
 
 	keys := []string{
-		"BURNLINK_ENV",
-		"BURNLINK_PUBLIC_BASE_URL",
-		"BURNLINK_INTERNAL_TOKEN",
-		"BURNLINK_INTERNAL_API_BASE_URL",
-		"BURNLINK_API_ADDR",
-		"BURNLINK_API_DB_PATH",
-		"BURNLINK_WORKER_DB_PATH",
-		"BURNLINK_NATS_URL",
-		"BURNLINK_NATS_STREAM",
-		"BURNLINK_NATS_JOB_SUBJECT",
-		"BURNLINK_PAYLOAD_INLINE_MAX_BYTES",
-		"BURNLINK_DEFAULT_TTL_SECONDS",
-		"BURNLINK_ALLOWED_TTL_SECONDS",
+		"FLICK_ENV",
+		"FLICK_PUBLIC_BASE_URL",
+		"FLICK_INTERNAL_TOKEN",
+		"FLICK_INTERNAL_API_BASE_URL",
+		"FLICK_API_ADDR",
+		"FLICK_API_DB_PATH",
+		"FLICK_WORKER_DB_PATH",
+		"FLICK_NATS_URL",
+		"FLICK_NATS_STREAM",
+		"FLICK_NATS_JOB_SUBJECT",
+		"FLICK_PAYLOAD_INLINE_MAX_BYTES",
+		"FLICK_DEFAULT_TTL_SECONDS",
+		"FLICK_ALLOWED_TTL_SECONDS",
 	}
 	for _, key := range keys {
 		t.Setenv(key, "")

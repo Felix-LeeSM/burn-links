@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
   - name: Security-sensitive report
-    url: https://github.com/Felix-LeeSM/burn-links/security/advisories/new
+    url: https://github.com/Felix-LeeSM/flick-drop/security/advisories/new
     about: Report security issues privately when the repository feature is available.

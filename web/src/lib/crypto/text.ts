@@ -3,7 +3,7 @@ export const KDF_ITERATIONS = 600_000;
 export const KEY_LENGTH_BITS = 256;
 export const SALT_BYTES = 16;
 export const NONCE_BYTES = 12;
-export const ACCESS_VERIFIER_PURPOSE = 'BurnLink access verifier v1';
+export const ACCESS_VERIFIER_PURPOSE = 'Flick access verifier v1';
 
 export type KdfParams = {
 	algorithm: typeof KDF_ALGORITHM;
@@ -84,7 +84,7 @@ export async function encryptFile(
 		options.nonce ?? randomBytes(NONCE_BYTES)
 	);
 	const encryptedFilename = await encryptMetadata(
-		file.name || 'burnlink-file',
+		file.name || 'flick-file',
 		context.key,
 		options.filenameNonce ?? randomBytes(NONCE_BYTES)
 	);

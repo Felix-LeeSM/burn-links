@@ -6,7 +6,7 @@ Expected files:
 
 - `openapi.yaml`: browser/web to API HTTP contract.
 - `credential-payload.schema.json`: browser-only structured credential JSON
-  after the `BLCR1:` prefix and before text-secret encryption.
+  after the `FLCR1:` prefix and before text-secret encryption.
 - `events/*.schema.json`: NATS job/event payload contracts.
 - `internal-api.md` or generated specs for worker to API internal endpoints.
 

@@ -38,8 +38,8 @@ func TestOutboxPublisherPublishesDueEvents(t *testing.T) {
 	if len(fake.messages) != 1 {
 		t.Fatalf("message count = %d, want 1", len(fake.messages))
 	}
-	if fake.messages[0].subject != "burnlink.jobs" {
-		t.Fatalf("subject = %q, want burnlink.jobs", fake.messages[0].subject)
+	if fake.messages[0].subject != "flick.jobs" {
+		t.Fatalf("subject = %q, want flick.jobs", fake.messages[0].subject)
 	}
 	if !bytes.Equal(fake.messages[0].payload, []byte(record.PayloadJSON)) {
 		t.Fatalf("published payload mismatch")

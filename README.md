@@ -1,11 +1,11 @@
-# BurnLink
+# Flick
 
-BurnLink is a self-hosted, open-source service for sharing short-lived secrets
+Flick is a self-hosted, open-source service for sharing short-lived secrets
 and files through one-time links.
 
 It is designed for people who want a small deployable alternative to sending
 passwords, API keys, private notes, or temporary files through chat, email, or
-long-lived cloud drives. A BurnLink secret is meant to be created, opened once,
+long-lived cloud drives. A Flick secret is meant to be created, opened once,
 and removed.
 
 ## What It Does
@@ -32,7 +32,7 @@ the browser to decrypt the payload.
 
 ## Security Model
 
-BurnLink is built around one rule:
+Flick is built around one rule:
 
 ```text
 The server should never know the plaintext secret, passphrase, or derived key.
@@ -45,19 +45,19 @@ separate access proof. The passphrase and derived key never leave the browser.
 Ciphertext is returned only after the API verifies the access proof and marks
 the secret consumed in the same operation.
 
-This does not make BurnLink a password manager or long-term vault. It is an
+This does not make Flick a password manager or long-term vault. It is an
 ephemeral delivery service: short-lived, one-time, and intentionally limited.
 
 ## Deployment Target
 
-BurnLink is designed to be deployable by anyone with a small Kubernetes cluster
+Flick is designed to be deployable by anyone with a small Kubernetes cluster
 or OCI Always Free resources.
 
 The intended production shape is:
 
-- `burnlink-web`: SvelteKit frontend.
-- `burnlink-api`: Go HTTP API.
-- `burnlink-worker`: Go worker for cleanup and async jobs.
+- `flick-web`: SvelteKit frontend.
+- `flick-api`: Go HTTP API.
+- `flick-worker`: Go worker for cleanup and async jobs.
 - `nats`: NATS JetStream broker.
 - SQLite files on persistent volume for metadata, small ciphertext payloads,
   and worker state.
@@ -98,7 +98,7 @@ local private overlay.
 
 ## License
 
-BurnLink is licensed under the [Apache License 2.0](LICENSE).
+Flick is licensed under the [Apache License 2.0](LICENSE).
 
 ## Development Environment
 
