@@ -139,6 +139,33 @@ func newTestRouter(t *testing.T) http.Handler {
 	return NewRouter(conn, store, Options{PayloadInlineMaxBytes: 1024})
 }
 
+func TestCORSAllowsConfiguredOrigin(t *testing.T) {
+	conn := openHTTPTestDB(t, context.Background())
+	store, err := secrets.NewStore(conn, secrets.StoreOptions{
+		PayloadInlineMaxBytes: 1024,
+		AllowedTTLSeconds:     []int{600, 3600, 86400},
+	})
+	if err != nil {
+		t.Fatalf("new store: %v", err)
+	}
+	router := NewRouter(conn, store, Options{
+		PayloadInlineMaxBytes: 1024,
+		AllowedOrigin:         "http://localhost:5173",
+	})
+
+	req := httptest.NewRequest(http.MethodOptions, "/api/secrets", nil)
+	req.Header.Set("Origin", "http://localhost:5173")
+	resp := httptest.NewRecorder()
+	router.ServeHTTP(resp, req)
+
+	if resp.Code != http.StatusNoContent {
+		t.Fatalf("status = %d, want 204", resp.Code)
+	}
+	if got := resp.Header().Get("Access-Control-Allow-Origin"); got != "http://localhost:5173" {
+		t.Fatalf("Access-Control-Allow-Origin = %q", got)
+	}
+}
+
 func openHTTPTestDB(t *testing.T, ctx context.Context) *sql.DB {
 	t.Helper()
 

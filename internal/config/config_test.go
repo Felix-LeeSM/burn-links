@@ -12,6 +12,9 @@ func TestLoadUsesDefaults(t *testing.T) {
 	if cfg.APIAddr != ":8080" {
 		t.Fatalf("APIAddr = %q, want :8080", cfg.APIAddr)
 	}
+	if cfg.PublicBaseURL != "http://localhost:5173" {
+		t.Fatalf("PublicBaseURL = %q, want http://localhost:5173", cfg.PublicBaseURL)
+	}
 	if cfg.APIDBPath != "./var/api.db" {
 		t.Fatalf("APIDBPath = %q, want ./var/api.db", cfg.APIDBPath)
 	}
@@ -35,6 +38,7 @@ func clearBurnLinkEnv(t *testing.T) {
 
 	keys := []string{
 		"BURNLINK_ENV",
+		"BURNLINK_PUBLIC_BASE_URL",
 		"BURNLINK_API_ADDR",
 		"BURNLINK_API_DB_PATH",
 		"BURNLINK_PAYLOAD_INLINE_MAX_BYTES",
