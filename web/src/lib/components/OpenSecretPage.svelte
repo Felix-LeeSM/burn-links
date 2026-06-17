@@ -8,6 +8,8 @@
 		type EncryptedFilePayload,
 		type EncryptedTextPayload
 	} from '$lib/crypto/text';
+	import CredentialView from '$lib/components/CredentialView.svelte';
+	import { parseCredential, type CredentialEnvelope } from '$lib/credentials';
 	import { onDestroy } from 'svelte';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -37,6 +39,8 @@
 	let passphrase = $state('');
 	let openedKind = $state<SecretKind | null>(null);
 	let decryptedText = $state('');
+	let credential = $state<CredentialEnvelope | null>(null);
+	let credentialView = $state<CredentialView | null>(null);
 	let downloadURL = $state('');
 	let downloadFilename = $state('');
 	let downloadSize = $state(0);
@@ -69,6 +73,7 @@
 		status = 'Opening';
 		statusKind = 'idle';
 		decryptedText = '';
+		credential = null;
 		copyState = 'idle';
 		revokeDownloadURL();
 
@@ -90,6 +95,7 @@
 				openedKind = 'file';
 			} else {
 				decryptedText = await decryptText(payload as EncryptedTextPayload, passphrase);
+				credential = parseCredential(decryptedText);
 				openedKind = 'text';
 			}
 
@@ -106,10 +112,11 @@
 	}
 
 	async function copySecret(): Promise<void> {
-		if (decryptedText.length === 0) return;
+		const copyText = credential ? credentialView?.copyText() : decryptedText;
+		if (!copyText || copyText.length === 0) return;
 
 		try {
-			await navigator.clipboard.writeText(decryptedText);
+			await navigator.clipboard.writeText(copyText);
 			copyState = 'copied';
 			window.setTimeout(() => {
 				copyState = 'idle';
@@ -215,8 +222,8 @@
 								type="button"
 								variant="outline"
 								size="sm"
-								aria-label="Copy secret"
-								title="Copy secret"
+								aria-label={credential ? 'Copy all' : 'Copy secret'}
+								title={credential ? 'Copy all' : 'Copy secret'}
 								onclick={copySecret}
 							>
 								{#if copyState === 'copied'}
@@ -224,14 +231,16 @@
 									Copied
 								{:else}
 									<CopyIcon class="size-4" />
-									Copy
+									{credential ? 'Copy all' : 'Copy'}
 								{/if}
 							</Button>
 						{/if}
 					</div>
 				</Card.Header>
 				<Card.Content class="px-4 py-4 sm:px-5">
-					{#if hasOpened && openedKind === 'text'}
+					{#if hasOpened && openedKind === 'text' && credential}
+						<CredentialView bind:this={credentialView} {credential} />
+					{:else if hasOpened && openedKind === 'text'}
 						<Textarea
 							class="min-h-64 resize-y font-mono text-sm"
 							value={decryptedText}
