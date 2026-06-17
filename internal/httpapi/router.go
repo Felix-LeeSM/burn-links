@@ -9,12 +9,15 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
+	"github.com/Felix-LeeSM/burn-links/internal/events"
 	"github.com/Felix-LeeSM/burn-links/internal/secrets"
 )
 
 type Server struct {
 	db                    *sql.DB
 	secrets               *secrets.Store
+	outbox                *events.OutboxStore
+	newJobID              func() (string, error)
 	payloadInlineMaxBytes int64
 	allowedOrigin         string
 	internalToken         string
@@ -24,6 +27,8 @@ type Options struct {
 	PayloadInlineMaxBytes int64
 	AllowedOrigin         string
 	InternalToken         string
+	OutboxStore           *events.OutboxStore
+	NewJobID              func() (string, error)
 }
 
 func NewRouter(db *sql.DB, secretStore *secrets.Store, opts Options) http.Handler {
@@ -35,9 +40,14 @@ func NewRouter(db *sql.DB, secretStore *secrets.Store, opts Options) http.Handle
 	server := Server{
 		db:                    db,
 		secrets:               secretStore,
+		outbox:                opts.OutboxStore,
+		newJobID:              events.NewJobID,
 		payloadInlineMaxBytes: payloadInlineMaxBytes,
 		allowedOrigin:         strings.TrimRight(opts.AllowedOrigin, "/"),
 		internalToken:         opts.InternalToken,
+	}
+	if opts.NewJobID != nil {
+		server.newJobID = opts.NewJobID
 	}
 
 	r := chi.NewRouter()

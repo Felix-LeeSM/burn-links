@@ -1,6 +1,8 @@
 package events
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -20,6 +22,14 @@ const (
 	ReasonManual   = "manual"
 	ReasonRetry    = "retry"
 )
+
+func NewJobID() (string, error) {
+	var bytes [18]byte
+	if _, err := rand.Read(bytes[:]); err != nil {
+		return "", fmt.Errorf("generate job id: %w", err)
+	}
+	return base64.RawURLEncoding.EncodeToString(bytes[:]), nil
+}
 
 type JobEvent struct {
 	JobID       string    `json:"job_id"`

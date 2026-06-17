@@ -181,14 +181,32 @@ func (s *Store) Get(ctx context.Context, id string) (Secret, error) {
 }
 
 func (s *Store) Consume(ctx context.Context, id string) error {
-	now := s.now().UTC()
-
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("begin consume secret: %w", err)
 	}
 	defer rollback(tx)
 
+	if err := s.MarkConsumedTx(ctx, tx, id); err != nil {
+		return err
+	}
+
+	if _, err := tx.ExecContext(ctx, `delete from secret_payloads where secret_id = ?`, id); err != nil {
+		return fmt.Errorf("delete consumed payload: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("commit consume secret: %w", err)
+	}
+	return nil
+}
+
+func (s *Store) MarkConsumedTx(ctx context.Context, tx *sql.Tx, id string) error {
+	if tx == nil {
+		return fmt.Errorf("transaction is required")
+	}
+
+	now := s.now().UTC()
 	secret, consumedAt, err := s.load(ctx, tx, id)
 	if err != nil {
 		return err
@@ -218,14 +236,6 @@ func (s *Store) Consume(ctx context.Context, id string) error {
 	}
 	if affected != 1 {
 		return ErrConsumed
-	}
-
-	if _, err := tx.ExecContext(ctx, `delete from secret_payloads where secret_id = ?`, id); err != nil {
-		return fmt.Errorf("delete consumed payload: %w", err)
-	}
-
-	if err := tx.Commit(); err != nil {
-		return fmt.Errorf("commit consume secret: %w", err)
 	}
 	return nil
 }
