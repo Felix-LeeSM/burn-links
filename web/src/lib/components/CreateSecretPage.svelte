@@ -47,7 +47,7 @@ const ttlOptions: Array<{ label: string; value: TtlSeconds }> = [
 
 const defaultLocalFileMaxBytes = 1024 * 1024 - 16;
 const configuredLocalFileMaxBytes = Number(
-	import.meta.env.PUBLIC_BURNLINK_LOCAL_FILE_MAX_BYTES ?? defaultLocalFileMaxBytes
+	import.meta.env.PUBLIC_FLICK_LOCAL_FILE_MAX_BYTES ?? defaultLocalFileMaxBytes
 );
 const localFileMaxBytes =
 	Number.isFinite(configuredLocalFileMaxBytes) && configuredLocalFileMaxBytes > 0
@@ -253,7 +253,7 @@ function credentialIcon(icon: string): typeof ListPlusIcon {
 </script>
 
 <svelte:head>
-	<title>Create secret - BurnLink</title>
+	<title>Create secret - Flick</title>
 </svelte:head>
 
 <main class="min-h-screen bg-background px-3 py-4 text-foreground sm:px-5 sm:py-6">
@@ -263,7 +263,7 @@ function credentialIcon(icon: string): typeof ListPlusIcon {
 				<span class="inline-flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
 					<LockKeyholeIcon class="size-4" />
 				</span>
-				<span>BurnLink</span>
+				<span>Flick</span>
 			</a>
 
 			<nav class="flex items-center gap-2">
@@ -364,7 +364,7 @@ function credentialIcon(icon: string): typeof ListPlusIcon {
 							<Label for="secret-passphrase">Passphrase</Label>
 							<Input
 								id="secret-passphrase"
-								name="burnlink-passphrase"
+								name="flick-passphrase"
 								type="password"
 								autocomplete="off"
 								autocapitalize="none"

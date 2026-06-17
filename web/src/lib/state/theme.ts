@@ -4,7 +4,7 @@ import { browser } from '$app/environment';
 export type ThemePreference = 'system' | 'light' | 'dark';
 export type ResolvedTheme = 'light' | 'dark';
 
-const themeStorageKey = 'burnlink-theme';
+const themeStorageKey = 'flick-theme';
 
 const preference = writable<ThemePreference>('system');
 const resolved = writable<ResolvedTheme>('light');

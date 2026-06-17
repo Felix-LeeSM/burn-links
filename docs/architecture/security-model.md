@@ -1,6 +1,6 @@
 # Security Model
 
-BurnLink is designed around client-side encryption and short retention.
+Flick is designed around client-side encryption and short retention.
 
 ## Security Goal
 
@@ -34,15 +34,15 @@ Protected assets:
 Browser
   owns plaintext, passphrase, and derived key
 
-burnlink-web
+flick-web
   serves UI and public client config only
 
-burnlink-api
+flick-api
   stores ciphertext, metadata, and access proof hashes
   owns api.db
   publishes outbox-backed jobs
 
-burnlink-worker
+flick-worker
   consumes jobs
   owns worker.db
   calls internal API endpoints
@@ -68,7 +68,7 @@ OCI Object Storage
   full ciphertext bodies.
 - Filenames stored server-side must be encrypted or opaque.
 - File names are encrypted in the browser as metadata before upload.
-- Internal worker to API calls require `BURNLINK_INTERNAL_TOKEN`.
+- Internal worker to API calls require `FLICK_INTERNAL_TOKEN`.
 - Public repository files must not contain real credentials or production
   configuration.
 
@@ -99,7 +99,7 @@ requires a browser WASM dependency and supply-chain review.
 Structured credentials are a browser-side text-secret encoding, not a new server
 secret kind.
 
-The create page serializes credential templates as `BLCR1:` followed by JSON
+The create page serializes credential templates as `FLCR1:` followed by JSON
 matching `contracts/credential-payload.schema.json`, then encrypts that string
 through the existing text-secret path. The API stores and returns the encrypted
 payload as `kind:"text"` and never sees field labels, values, notes, titles, or
@@ -113,7 +113,7 @@ as ordinary text secrets.
 
 ## Deletion and Residual Risk
 
-Deleting a secret means BurnLink no longer serves its ciphertext and no server
+Deleting a secret means Flick no longer serves its ciphertext and no server
 component knows the passphrase or derived key.
 
 Residual risks remain:
@@ -128,7 +128,7 @@ Residual risks remain:
   web assets.
 
 Runbooks must document checkpoint/vacuum and backup retention behavior. The
-product should communicate that BurnLink is ephemeral delivery, not guaranteed
+product should communicate that Flick is ephemeral delivery, not guaranteed
 physical erasure.
 
 ## Transport

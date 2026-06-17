@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-api_base="${BURNLINK_API_BASE_URL:-http://localhost:8080}"
+api_base="${FLICK_API_BASE_URL:-http://localhost:8080}"
 
 if ! curl -fsS "$api_base/healthz" >/dev/null 2>&1; then
 	echo "local-secret-flow: API not reachable at $api_base; skipped"

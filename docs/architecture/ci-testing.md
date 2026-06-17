@@ -1,6 +1,6 @@
 # CI and Testing
 
-BurnLink separates fast PR checks from slower infrastructure smoke tests.
+Flick separates fast PR checks from slower infrastructure smoke tests.
 
 ## Layers
 

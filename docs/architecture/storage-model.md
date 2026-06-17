@@ -1,16 +1,16 @@
 # Storage Model
 
-BurnLink stores only ciphertext and metadata on the server side.
+Flick stores only ciphertext and metadata on the server side.
 
 ## Databases
 
 ```text
 api.db
-  owner: burnlink-api
+  owner: flick-api
   contains: secrets, small ciphertext BLOBs, audit_events, outbox_events
 
 worker.db
-  owner: burnlink-worker
+  owner: flick-worker
   contains: job receipts, attempts, dead-letter metadata, worker-local state
 
 NATS JetStream filestore
@@ -48,7 +48,7 @@ to the public repository.
 
 ## Deletion Semantics
 
-Deleting a secret means BurnLink no longer serves the ciphertext and no server
+Deleting a secret means Flick no longer serves the ciphertext and no server
 component knows the passphrase or derived key.
 
 SQLite BLOB deletion may leave bytes in WAL/freelist pages until checkpoint or

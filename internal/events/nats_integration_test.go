@@ -9,14 +9,14 @@ import (
 )
 
 func TestNATSJetStreamPublisherIntegration(t *testing.T) {
-	if os.Getenv("BURNLINK_NATS_INTEGRATION") != "1" {
-		t.Skip("set BURNLINK_NATS_INTEGRATION=1 to run against local NATS")
+	if os.Getenv("FLICK_NATS_INTEGRATION") != "1" {
+		t.Skip("set FLICK_NATS_INTEGRATION=1 to run against local NATS")
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	url := os.Getenv("BURNLINK_NATS_URL")
+	url := os.Getenv("FLICK_NATS_URL")
 	if url == "" {
 		url = "nats://127.0.0.1:4222"
 	}
@@ -33,8 +33,8 @@ func TestNATSJetStreamPublisherIntegration(t *testing.T) {
 	}
 
 	suffix := strconv.FormatInt(time.Now().UnixNano(), 10)
-	stream := "BURNLINK_TEST_" + suffix
-	subject := "burnlink.test." + suffix
+	stream := "FLICK_TEST_" + suffix
+	subject := "flick.test." + suffix
 	if err := publisher.EnsureStream(ctx, stream, subject); err != nil {
 		t.Fatalf("ensure stream: %v", err)
 	}

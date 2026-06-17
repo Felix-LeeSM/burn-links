@@ -1,15 +1,15 @@
-# BurnLink Agent Guide
+# Flick Agent Guide
 
 Read this file first, then read the nearest `AGENTS.md` for the directory you
 will change.
 
 ## Project Shape
 
-BurnLink is a small self-hosted service with four runtime parts:
+Flick is a small self-hosted service with four runtime parts:
 
-- `burnlink-web`: SvelteKit UI.
-- `burnlink-api`: HTTP API and owner of `api.db`.
-- `burnlink-worker`: NATS JetStream consumer and owner of `worker.db`.
+- `flick-web`: SvelteKit UI.
+- `flick-api`: HTTP API and owner of `api.db`.
+- `flick-worker`: NATS JetStream consumer and owner of `worker.db`.
 - `nats`: broker for async job delivery.
 
 Go packages under `internal/` are not services. They are library boundaries used
@@ -19,8 +19,8 @@ by the commands in `cmd/`.
 
 - Directories are split by ownership and reason to change, not by broad
   technical labels.
-- Runtime service entrypoints live in `cmd/burnlink-api`,
-  `cmd/burnlink-worker`, and `web`. Do not introduce a top-level `services/`
+- Runtime service entrypoints live in `cmd/flick-api`,
+  `cmd/flick-worker`, and `web`. Do not introduce a top-level `services/`
   tree unless the architecture changes explicitly.
 - Shared Go implementation belongs under named `internal/*` packages. Avoid
   vague `common/`, `utils/`, `shared/`, or `lib/` directories.
@@ -33,7 +33,7 @@ by the commands in `cmd/`.
 
 ## Product Principles
 
-- BurnLink is an ephemeral delivery service, not a password manager or long-term
+- Flick is an ephemeral delivery service, not a password manager or long-term
   vault.
 - The core workflow is create, share, open once, cleanup.
 - Prefer a smaller product surface that preserves one-time and short-lived

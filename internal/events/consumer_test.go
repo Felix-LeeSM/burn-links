@@ -107,10 +107,10 @@ func TestConsumeMessagesRejectsUnknownAction(t *testing.T) {
 
 func TestConsumerConfigMatches(t *testing.T) {
 	wanted := nats.ConsumerConfig{
-		Durable:       "burnlink-worker",
+		Durable:       "flick-worker",
 		AckPolicy:     nats.AckExplicitPolicy,
 		DeliverPolicy: nats.DeliverAllPolicy,
-		FilterSubject: "burnlink.jobs",
+		FilterSubject: "flick.jobs",
 		MaxDeliver:    3,
 		ReplayPolicy:  nats.ReplayInstantPolicy,
 	}

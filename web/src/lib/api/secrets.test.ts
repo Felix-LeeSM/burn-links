@@ -234,7 +234,7 @@ describe('secret API client', () => {
 		const client = createSecretApiClient({ baseUrl: 'http://api.local/', fetcher });
 
 		await expect(client.getSecretMetadata('secret-id')).rejects.toThrow(
-			'Could not reach BurnLink. Check your connection and try again.'
+			'Could not reach Flick. Check your connection and try again.'
 		);
 		await expect(client.getSecretMetadata('secret-id')).rejects.toBeInstanceOf(SecretApiError);
 		await expect(client.getSecretMetadata('secret-id')).rejects.not.toThrow('Failed to fetch');

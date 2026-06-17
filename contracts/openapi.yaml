@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
-  title: BurnLink API
+  title: Flick API
   version: 0.1.0
-  description: HTTP contract for BurnLink web clients.
+  description: HTTP contract for Flick web clients.
 servers:
   - url: http://localhost:8080
 paths:
@@ -171,7 +171,7 @@ components:
     internalToken:
       type: apiKey
       in: header
-      name: X-BurnLink-Internal-Token
+      name: X-Flick-Internal-Token
   parameters:
     SecretId:
       name: id

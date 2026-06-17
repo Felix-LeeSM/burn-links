@@ -153,7 +153,7 @@ function formatBytes(bytes: number): string {
 </script>
 
 <svelte:head>
-	<title>Open secret - BurnLink</title>
+	<title>Open secret - Flick</title>
 </svelte:head>
 
 <main class="min-h-screen bg-background px-3 py-4 text-foreground sm:px-5 sm:py-6">
@@ -163,7 +163,7 @@ function formatBytes(bytes: number): string {
 				<span class="inline-flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
 					<LockKeyholeIcon class="size-4" />
 				</span>
-				<span>BurnLink</span>
+				<span>Flick</span>
 			</a>
 
 			<nav class="flex items-center gap-2">
@@ -183,7 +183,7 @@ function formatBytes(bytes: number): string {
 							<Label for="open-passphrase">Passphrase</Label>
 							<Input
 								id="open-passphrase"
-								name="burnlink-open-passphrase"
+								name="flick-open-passphrase"
 								type="password"
 								autocomplete="off"
 								autocapitalize="none"

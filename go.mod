@@ -1,4 +1,4 @@
-module github.com/Felix-LeeSM/burn-links
+module github.com/Felix-LeeSM/flick-drop
 
 go 1.24.0
 

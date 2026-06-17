@@ -132,12 +132,12 @@ fi
 
 subagent_review_at="$(
   gh api --paginate "repos/$GH_REPO/issues/$PR_NUMBER/comments?per_page=100" \
-    --jq '.[] | select((.body // "") | contains("## BurnLink Subagent Review")) | select((.body // "") | contains("Decision: approve")) | select((.body // "") | contains("Head: '"$head_sha"'")) | select(.author_association == "OWNER" or .author_association == "MEMBER" or .author_association == "COLLABORATOR") | .created_at' |
+    --jq '.[] | select((.body // "") | contains("## Flick Subagent Review")) | select((.body // "") | contains("Decision: approve")) | select((.body // "") | contains("Head: '"$head_sha"'")) | select(.author_association == "OWNER" or .author_association == "MEMBER" or .author_association == "COLLABORATOR") | .created_at' |
     tail -n 1
 )"
 
 if [ -z "$subagent_review_at" ]; then
-  fail "a trusted PR comment containing '## BurnLink Subagent Review', 'Decision: approve', and 'Head: $head_sha' is required"
+  fail "a trusted PR comment containing '## Flick Subagent Review', 'Decision: approve', and 'Head: $head_sha' is required"
 fi
 
 if ! has_label "review:approved"; then
@@ -176,10 +176,10 @@ while IFS= read -r file; do
     web/*)
       require_label "area:web" "$file changed"
       ;;
-    cmd/burnlink-api/* | internal/httpapi/*)
+    cmd/flick-api/* | internal/httpapi/*)
       require_label "area:api" "$file changed"
       ;;
-    cmd/burnlink-worker/* | internal/worker/*)
+    cmd/flick-worker/* | internal/worker/*)
       require_label "area:worker" "$file changed"
       ;;
     internal/storage/*)

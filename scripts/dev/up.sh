@@ -1,31 +1,31 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-export BURNLINK_ENV="${BURNLINK_ENV:-development}"
-export BURNLINK_LOG_LEVEL="${BURNLINK_LOG_LEVEL:-debug}"
-export BURNLINK_PUBLIC_BASE_URL="${BURNLINK_PUBLIC_BASE_URL:-http://localhost:5173}"
-export PUBLIC_BURNLINK_API_BASE_URL="${PUBLIC_BURNLINK_API_BASE_URL:-http://localhost:8080}"
-export PUBLIC_BURNLINK_LOCAL_FILE_MAX_BYTES="${PUBLIC_BURNLINK_LOCAL_FILE_MAX_BYTES:-1048560}"
-export BURNLINK_API_BASE_URL="${BURNLINK_API_BASE_URL:-http://localhost:8080}"
-export BURNLINK_INTERNAL_API_BASE_URL="${BURNLINK_INTERNAL_API_BASE_URL:-http://localhost:8080}"
-export BURNLINK_INTERNAL_TOKEN="${BURNLINK_INTERNAL_TOKEN:-change-me-local}"
-export BURNLINK_API_ADDR="${BURNLINK_API_ADDR:-:8080}"
-export BURNLINK_NATS_URL="${BURNLINK_NATS_URL:-nats://127.0.0.1:4222}"
-export BURNLINK_NATS_STREAM="${BURNLINK_NATS_STREAM:-BURNLINK_JOBS}"
-export BURNLINK_NATS_JOB_SUBJECT="${BURNLINK_NATS_JOB_SUBJECT:-burnlink.jobs}"
-export BURNLINK_DATA_DIR="${BURNLINK_DATA_DIR:-./var}"
-export BURNLINK_API_DB_PATH="${BURNLINK_API_DB_PATH:-./var/api.db}"
-export BURNLINK_WORKER_DB_PATH="${BURNLINK_WORKER_DB_PATH:-./var/worker.db}"
-export BURNLINK_PAYLOAD_INLINE_MAX_BYTES="${BURNLINK_PAYLOAD_INLINE_MAX_BYTES:-1048576}"
-export BURNLINK_MAX_FILE_BYTES="${BURNLINK_MAX_FILE_BYTES:-26214400}"
-export BURNLINK_DEFAULT_TTL_SECONDS="${BURNLINK_DEFAULT_TTL_SECONDS:-3600}"
-export BURNLINK_ALLOWED_TTL_SECONDS="${BURNLINK_ALLOWED_TTL_SECONDS:-600,3600,86400}"
-export BURNLINK_STORAGE_LARGE_BACKEND="${BURNLINK_STORAGE_LARGE_BACKEND:-disabled}"
-export BURNLINK_WORKER_ID="${BURNLINK_WORKER_ID:-local-worker-1}"
-export BURNLINK_WORKER_CONCURRENCY="${BURNLINK_WORKER_CONCURRENCY:-2}"
+export FLICK_ENV="${FLICK_ENV:-development}"
+export FLICK_LOG_LEVEL="${FLICK_LOG_LEVEL:-debug}"
+export FLICK_PUBLIC_BASE_URL="${FLICK_PUBLIC_BASE_URL:-http://localhost:5173}"
+export PUBLIC_FLICK_API_BASE_URL="${PUBLIC_FLICK_API_BASE_URL:-http://localhost:8080}"
+export PUBLIC_FLICK_LOCAL_FILE_MAX_BYTES="${PUBLIC_FLICK_LOCAL_FILE_MAX_BYTES:-1048560}"
+export FLICK_API_BASE_URL="${FLICK_API_BASE_URL:-http://localhost:8080}"
+export FLICK_INTERNAL_API_BASE_URL="${FLICK_INTERNAL_API_BASE_URL:-http://localhost:8080}"
+export FLICK_INTERNAL_TOKEN="${FLICK_INTERNAL_TOKEN:-change-me-local}"
+export FLICK_API_ADDR="${FLICK_API_ADDR:-:8080}"
+export FLICK_NATS_URL="${FLICK_NATS_URL:-nats://127.0.0.1:4222}"
+export FLICK_NATS_STREAM="${FLICK_NATS_STREAM:-FLICK_JOBS}"
+export FLICK_NATS_JOB_SUBJECT="${FLICK_NATS_JOB_SUBJECT:-flick.jobs}"
+export FLICK_DATA_DIR="${FLICK_DATA_DIR:-./var}"
+export FLICK_API_DB_PATH="${FLICK_API_DB_PATH:-./var/api.db}"
+export FLICK_WORKER_DB_PATH="${FLICK_WORKER_DB_PATH:-./var/worker.db}"
+export FLICK_PAYLOAD_INLINE_MAX_BYTES="${FLICK_PAYLOAD_INLINE_MAX_BYTES:-1048576}"
+export FLICK_MAX_FILE_BYTES="${FLICK_MAX_FILE_BYTES:-26214400}"
+export FLICK_DEFAULT_TTL_SECONDS="${FLICK_DEFAULT_TTL_SECONDS:-3600}"
+export FLICK_ALLOWED_TTL_SECONDS="${FLICK_ALLOWED_TTL_SECONDS:-600,3600,86400}"
+export FLICK_STORAGE_LARGE_BACKEND="${FLICK_STORAGE_LARGE_BACKEND:-disabled}"
+export FLICK_WORKER_ID="${FLICK_WORKER_ID:-local-worker-1}"
+export FLICK_WORKER_CONCURRENCY="${FLICK_WORKER_CONCURRENCY:-2}"
 
-compose_project="${BURNLINK_DEV_COMPOSE_PROJECT:-burnlink-dev}"
-nats_monitor_url="${BURNLINK_DEV_NATS_MONITOR_URL:-http://127.0.0.1:8222/varz}"
+compose_project="${FLICK_DEV_COMPOSE_PROJECT:-flick-dev}"
+nats_monitor_url="${FLICK_DEV_NATS_MONITOR_URL:-http://127.0.0.1:8222/varz}"
 nats_started=0
 stopping=0
 pids=()
@@ -81,8 +81,8 @@ wait_for_http() {
 }
 
 ensure_nats() {
-	if [ "${BURNLINK_DEV_SKIP_NATS:-}" = "1" ]; then
-		echo "dev: skipping NATS startup because BURNLINK_DEV_SKIP_NATS=1"
+	if [ "${FLICK_DEV_SKIP_NATS:-}" = "1" ]; then
+		echo "dev: skipping NATS startup because FLICK_DEV_SKIP_NATS=1"
 		return
 	fi
 
@@ -148,16 +148,16 @@ monitor_processes() {
 ensure_nats
 install_web_deps
 
-start_process "api" go run ./cmd/burnlink-api
-wait_for_http "api" "${BURNLINK_API_BASE_URL%/}/healthz" "${pids[0]}"
+start_process "api" go run ./cmd/flick-api
+wait_for_http "api" "${FLICK_API_BASE_URL%/}/healthz" "${pids[0]}"
 
-start_process "worker" go run ./cmd/burnlink-worker
+start_process "worker" go run ./cmd/flick-worker
 start_process "web" pnpm --dir web dev --host 127.0.0.1
-wait_for_http "web" "$BURNLINK_PUBLIC_BASE_URL" "${pids[2]}"
+wait_for_http "web" "$FLICK_PUBLIC_BASE_URL" "${pids[2]}"
 
 echo "dev: all services are running"
-echo "dev: web ${BURNLINK_PUBLIC_BASE_URL}"
-echo "dev: api ${BURNLINK_API_BASE_URL}"
+echo "dev: web ${FLICK_PUBLIC_BASE_URL}"
+echo "dev: api ${FLICK_API_BASE_URL}"
 echo "dev: nats monitor ${nats_monitor_url%/varz}"
 echo "dev: press Ctrl-C to stop"
 

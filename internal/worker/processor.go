@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Felix-LeeSM/burn-links/internal/events"
+	"github.com/Felix-LeeSM/flick-drop/internal/events"
 )
 
 const DefaultMaxAttempts = 3

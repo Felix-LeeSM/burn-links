@@ -27,7 +27,7 @@ When a temporary decision becomes durable, move the final decision into
 
 Documentation principles:
 
-- Public docs should describe BurnLink as a production-facing open-source
+- Public docs should describe Flick as a production-facing open-source
   self-hosted product.
 - Document residual risk plainly. Do not overclaim physical deletion,
   anonymity, or perfect secrecy.

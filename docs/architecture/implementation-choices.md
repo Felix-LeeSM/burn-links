@@ -13,7 +13,7 @@ Package manager: pnpm
 
 Rationale:
 
-- BurnLink's UI is browser-crypto heavy and does not require SSR for the MVP.
+- Flick's UI is browser-crypto heavy and does not require SSR for the MVP.
 - Static output keeps the web service small and easy to deploy.
 - Runtime secrets must not be exposed to the frontend; only `PUBLIC_` values are
   allowed in browser code.
@@ -44,7 +44,7 @@ Rationale:
 
 - CGO-free builds simplify local development, CI, cross-compilation, and small
   container images.
-- BurnLink's SQLite usage is straightforward enough to start with the pure-Go
+- Flick's SQLite usage is straightforward enough to start with the pure-Go
   driver.
 
 If real workload testing exposes compatibility or performance issues, reassess
@@ -60,7 +60,7 @@ Local simulator: none by default
 
 Rationale:
 
-- BurnLink targets OCI deployment and should verify behavior against a real OCI
+- Flick targets OCI deployment and should verify behavior against a real OCI
   development bucket.
 - MinIO is S3-compatible, not an OCI simulator, so it is not the default test
   double for OCI behavior.

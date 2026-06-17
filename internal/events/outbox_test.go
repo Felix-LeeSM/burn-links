@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Felix-LeeSM/burn-links/internal/db"
+	"github.com/Felix-LeeSM/flick-drop/internal/db"
 )
 
 func TestOutboxStoreEnqueueListAndMark(t *testing.T) {
@@ -93,7 +93,7 @@ func TestOutboxStoreRejectsPayloadJSONWithUnknownFields(t *testing.T) {
 		id, subject, payload_json, next_attempt_at, created_at, updated_at
 	) values (?, ?, ?, ?, ?, ?)`,
 		"job_unsafe",
-		"burnlink.jobs",
+		"flick.jobs",
 		`{"job_id":"job_unsafe","kind":"expire_secret","secret_id":"sec_1","requested_at":"2026-06-17T10:00:00Z","payload":{"passphrase":"do-not-send"}}`,
 		formatTime(now),
 		formatTime(now),
@@ -148,7 +148,7 @@ func openEventsTestDB(t *testing.T, ctx context.Context) *sql.DB {
 func newTestOutboxStore(t *testing.T, conn *sql.DB) *OutboxStore {
 	t.Helper()
 
-	store, err := NewOutboxStore(conn, "burnlink.jobs")
+	store, err := NewOutboxStore(conn, "flick.jobs")
 	if err != nil {
 		t.Fatalf("new outbox store: %v", err)
 	}

@@ -1,6 +1,6 @@
 import { CREDENTIAL_TYPES, type CredentialType } from './templates';
 
-export const CREDENTIAL_PREFIX = 'BLCR1:';
+export const CREDENTIAL_PREFIX = 'FLCR1:';
 export const CREDENTIAL_VERSION = 1;
 
 export type CredentialField = {

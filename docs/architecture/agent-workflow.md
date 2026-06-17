@@ -1,6 +1,6 @@
 # Agent Workflow
 
-BurnLink uses directory-local `AGENTS.md` files and temporary work notes instead
+Flick uses directory-local `AGENTS.md` files and temporary work notes instead
 of a full `memory/` tree.
 
 The goal is that a request like "implement this feature" is converted into a
@@ -133,7 +133,7 @@ storage, or security code, it must use `risk:medium` or `risk:high`.
 
 ## Review Gate
 
-BurnLink starts with label-based review because a single GitHub account cannot
+Flick starts with label-based review because a single GitHub account cannot
 approve its own PR for native required reviews.
 
 Review has two parts:
@@ -171,7 +171,7 @@ the new head, add a new review comment, then remove and re-apply
 
 Required review comment:
 
-- a PR comment containing `## BurnLink Subagent Review` is required
+- a PR comment containing `## Flick Subagent Review` is required
 - the comment must include `Decision: approve`
 - the comment must include `Head: <current PR head SHA>`
 - the comment must be written by an owner, member, or collaborator
@@ -186,7 +186,7 @@ The review gate publishes an explicit `Review gate` commit status to the PR head
 SHA. Branch protection should require that status context, not the
 `pull_request_target` workflow job name.
 
-When BurnLink has another maintainer or bot account that can perform real
+When Flick has another maintainer or bot account that can perform real
 reviews, the repository can move from label-based review to native required
 approving reviews.
 

@@ -21,7 +21,7 @@ func ConnectNATS(url string) (*nats.Conn, error) {
 	if url == "" {
 		return nil, fmt.Errorf("nats url is required")
 	}
-	conn, err := nats.Connect(url, nats.Name("burnlink"), nats.Timeout(5*time.Second))
+	conn, err := nats.Connect(url, nats.Name("flick"), nats.Timeout(5*time.Second))
 	if err != nil {
 		return nil, fmt.Errorf("connect nats: %w", err)
 	}

@@ -14,7 +14,7 @@ initializeTheme();
 	<script>
 		(() => {
 			try {
-				const stored = window.localStorage.getItem('burnlink-theme');
+				const stored = window.localStorage.getItem('flick-theme');
 				const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 				const isDark = stored === 'dark' || (stored !== 'light' && prefersDark);
 				document.documentElement.classList.toggle('dark', isDark);

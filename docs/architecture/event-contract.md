@@ -1,23 +1,23 @@
 # Event Contract
 
-BurnLink uses NATS JetStream for API to worker jobs.
+Flick uses NATS JetStream for API to worker jobs.
 
 ## Stream
 
 Initial configuration:
 
 ```text
-stream: BURNLINK_JOBS
-subject: burnlink.jobs
+stream: FLICK_JOBS
+subject: flick.jobs
 storage: file
 retention: work queue
 ```
 
 Exact deployment values come from environment variables:
 
-- `BURNLINK_NATS_URL`
-- `BURNLINK_NATS_STREAM`
-- `BURNLINK_NATS_JOB_SUBJECT`
+- `FLICK_NATS_URL`
+- `FLICK_NATS_STREAM`
+- `FLICK_NATS_JOB_SUBJECT`
 
 ## Payload
 
@@ -61,7 +61,7 @@ This prevents a successful API write from losing the worker job if the broker is
 temporarily unavailable.
 
 The publisher sends the stored `payload_json` bytes to
-`BURNLINK_NATS_JOB_SUBJECT`. On publish ack it marks the outbox row
+`FLICK_NATS_JOB_SUBJECT`. On publish ack it marks the outbox row
 `published`; on publish failure it records the error and schedules the next
 attempt.
 
@@ -72,7 +72,7 @@ The worker uses a durable pull consumer for the job subject.
 Initial consumer defaults:
 
 ```text
-durable: burnlink-worker
+durable: flick-worker
 ack policy: explicit
 max deliver: 3
 batch size: 8

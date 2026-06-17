@@ -20,7 +20,7 @@ while IFS= read -r key; do
     echo "env-contract: $key is in $example but not documented in $doc" >&2
     missing=1
   fi
-done < <(grep -E "^BURNLINK_[A-Z0-9_]+=" "$example" | cut -d= -f1 | sort -u)
+done < <(grep -E "^(FLICK|PUBLIC_FLICK)_[A-Z0-9_]+=" "$example" | cut -d= -f1 | sort -u)
 
 if ! grep -q "^\\.env\\.\\*$" .gitignore; then
   echo "env-contract: .gitignore must ignore .env.*" >&2

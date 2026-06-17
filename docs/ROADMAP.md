@@ -71,7 +71,7 @@ Out of scope:
 
 - Browser-side credential templates for login, card, identity, and custom
   fields.
-- Credential payloads are serialized as `BLCR1:` text and encrypted through the
+- Credential payloads are serialized as `FLCR1:` text and encrypted through the
   existing text-secret path.
 - API, DB, OpenAPI, storage, and worker behavior remain unchanged: structured
   credentials are stored as encrypted `kind:"text"` payloads.

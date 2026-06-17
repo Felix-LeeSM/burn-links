@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Felix-LeeSM/burn-links/internal/events"
+	"github.com/Felix-LeeSM/flick-drop/internal/events"
 )
 
 func TestCleanupClientSendsInternalCleanupRequest(t *testing.T) {
@@ -20,7 +20,7 @@ func TestCleanupClientSendsInternalCleanupRequest(t *testing.T) {
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		gotPath = r.URL.EscapedPath()
-		gotToken = r.Header.Get("X-BurnLink-Internal-Token")
+		gotToken = r.Header.Get("X-Flick-Internal-Token")
 		if r.Header.Get("Content-Type") != "application/json" {
 			t.Fatalf("Content-Type = %q, want application/json", r.Header.Get("Content-Type"))
 		}

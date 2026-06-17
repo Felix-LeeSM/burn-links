@@ -29,7 +29,7 @@ Review gate policy:
 - Use `pull_request_target` only for metadata checks.
 - Do not checkout, build, test, or execute PR head code in review-gate jobs.
 - Keep `permissions` least-privilege.
-- Require a `## BurnLink Subagent Review` PR comment created after the latest
+- Require a `## Flick Subagent Review` PR comment created after the latest
   commit and carrying the exact PR head SHA.
 - Publish the required `Review gate` commit status against the PR head SHA.
 - `review:approved` must be applied after the latest approving subagent review

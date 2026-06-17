@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://burnlink.local/contracts/events/job.schema.json",
-  "title": "BurnLink Job Event",
+  "$id": "https://flick.local/contracts/events/job.schema.json",
+  "title": "Flick Job Event",
   "type": "object",
   "additionalProperties": false,
   "required": ["job_id", "kind", "requested_at"],

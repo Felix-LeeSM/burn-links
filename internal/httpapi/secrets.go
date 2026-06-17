@@ -14,8 +14,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"github.com/Felix-LeeSM/burn-links/internal/events"
-	"github.com/Felix-LeeSM/burn-links/internal/secrets"
+	"github.com/Felix-LeeSM/flick-drop/internal/events"
+	"github.com/Felix-LeeSM/flick-drop/internal/secrets"
 )
 
 const createBodyOverheadLimit = int64(64 * 1024)

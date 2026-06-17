@@ -9,8 +9,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"github.com/Felix-LeeSM/burn-links/internal/events"
-	"github.com/Felix-LeeSM/burn-links/internal/secrets"
+	"github.com/Felix-LeeSM/flick-drop/internal/events"
+	"github.com/Felix-LeeSM/flick-drop/internal/secrets"
 )
 
 type Server struct {
@@ -86,7 +86,7 @@ func (s Server) cors(next http.Handler) http.Handler {
 
 func (s Server) internalAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		got := r.Header.Get("X-BurnLink-Internal-Token")
+		got := r.Header.Get("X-Flick-Internal-Token")
 		if !secureTokenEqual(got, s.internalToken) {
 			writeError(w, http.StatusUnauthorized, "unauthorized", "internal token is missing or invalid")
 			return
@@ -123,5 +123,5 @@ func (s Server) readyz(w http.ResponseWriter, r *http.Request) {
 func (s Server) metrics(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "text/plain; version=0.0.4")
 	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write([]byte("# HELP burnlink_api_info BurnLink API process info\n# TYPE burnlink_api_info gauge\nburnlink_api_info 1\n"))
+	_, _ = w.Write([]byte("# HELP flick_api_info Flick API process info\n# TYPE flick_api_info gauge\nflick_api_info 1\n"))
 }

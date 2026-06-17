@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Felix-LeeSM/burn-links/internal/events"
+	"github.com/Felix-LeeSM/flick-drop/internal/events"
 )
 
 func TestConsumerRunnerProcessesFetchedMessagesAndExitsOnCancel(t *testing.T) {
@@ -23,8 +23,8 @@ func TestConsumerRunnerProcessesFetchedMessagesAndExitsOnCancel(t *testing.T) {
 	})
 
 	runner, err := NewConsumerRunner(consumer, processor, RunnerOptions{
-		Stream:    "BURNLINK_JOBS",
-		Subject:   "burnlink.jobs",
+		Stream:    "FLICK_JOBS",
+		Subject:   "flick.jobs",
 		BatchSize: 2,
 		FetchWait: time.Millisecond,
 	})
@@ -38,8 +38,8 @@ func TestConsumerRunnerProcessesFetchedMessagesAndExitsOnCancel(t *testing.T) {
 	if !consumer.ensureCalled || !consumer.pullCalled {
 		t.Fatalf("ensure/pull called = %v/%v, want true/true", consumer.ensureCalled, consumer.pullCalled)
 	}
-	if consumer.stream != "BURNLINK_JOBS" || consumer.subject != "burnlink.jobs" {
-		t.Fatalf("consumer route = %q/%q, want BURNLINK_JOBS/burnlink.jobs", consumer.stream, consumer.subject)
+	if consumer.stream != "FLICK_JOBS" || consumer.subject != "flick.jobs" {
+		t.Fatalf("consumer route = %q/%q, want FLICK_JOBS/flick.jobs", consumer.stream, consumer.subject)
 	}
 	if consumer.durable != events.DefaultConsumerDurable {
 		t.Fatalf("durable = %q, want %q", consumer.durable, events.DefaultConsumerDurable)
@@ -67,8 +67,8 @@ func TestConsumerRunnerPropagatesFetchError(t *testing.T) {
 	})
 
 	runner, err := NewConsumerRunner(consumer, processor, RunnerOptions{
-		Stream:  "BURNLINK_JOBS",
-		Subject: "burnlink.jobs",
+		Stream:  "FLICK_JOBS",
+		Subject: "flick.jobs",
 	})
 	if err != nil {
 		t.Fatalf("new consumer runner: %v", err)

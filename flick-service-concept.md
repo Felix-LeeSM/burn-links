@@ -1,6 +1,6 @@
-# BurnLink Service Concept
+# Flick Service Concept
 
-BurnLink is a self-hosted, open-source service for sharing short-lived secrets
+Flick is a self-hosted, open-source service for sharing short-lived secrets
 and files through one-time links.
 
 The service is intentionally small enough to deploy on modest infrastructure,
@@ -9,7 +9,7 @@ API, worker, broker, storage, and deployment contracts.
 
 ## Purpose
 
-BurnLink exists for temporary delivery, not long-term storage.
+Flick exists for temporary delivery, not long-term storage.
 
 Core goals:
 
@@ -22,7 +22,7 @@ Core goals:
 - Make a public repository safe by keeping credentials and private deployment
   settings outside the repo.
 
-BurnLink is not a password manager, team vault, permanent file drive, or Dropbox
+Flick is not a password manager, team vault, permanent file drive, or Dropbox
 replacement.
 
 ## Product Flow
@@ -100,15 +100,15 @@ See [security model](docs/architecture/security-model.md).
 Initial services:
 
 ```text
-burnlink-web:
+flick-web:
   SvelteKit UI
 
-burnlink-api:
+flick-api:
   Go HTTP/JSON API
   owner of api.db
   outbox publisher to NATS JetStream
 
-burnlink-worker:
+flick-worker:
   Go worker
   owner of worker.db
   NATS JetStream consumer
@@ -164,7 +164,7 @@ See [storage model](docs/architecture/storage-model.md).
 
 ## OCI Free Tier Target
 
-BurnLink should be deployable without managed database services.
+Flick should be deployable without managed database services.
 
 The intended small deployment uses:
 

@@ -16,7 +16,7 @@ if ! command -v kubectl >/dev/null 2>&1; then
   exit 1
 fi
 
-cluster="burnlink-ci"
+cluster="flick-ci"
 
 cleanup() {
   k3d cluster delete "$cluster" >/dev/null 2>&1 || true
@@ -25,8 +25,8 @@ trap cleanup EXIT
 
 k3d cluster create "$cluster" --agents 1 --wait
 kubectl apply -k deploy/base
-kubectl -n burnlink rollout status deploy/burnlink-api --timeout=120s
-kubectl -n burnlink rollout status deploy/burnlink-worker --timeout=120s
-kubectl -n burnlink rollout status deploy/burnlink-web --timeout=120s
+kubectl -n flick rollout status deploy/flick-api --timeout=120s
+kubectl -n flick rollout status deploy/flick-worker --timeout=120s
+kubectl -n flick rollout status deploy/flick-web --timeout=120s
 
 echo "k3d-smoke: ok"

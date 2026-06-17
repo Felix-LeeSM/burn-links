@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Felix-LeeSM/burn-links/internal/events"
+	"github.com/Felix-LeeSM/flick-drop/internal/events"
 )
 
 const defaultCleanupClientTimeout = 10 * time.Second
@@ -84,7 +84,7 @@ func (c *CleanupClient) CleanupSecret(ctx context.Context, req CleanupRequest) (
 		return CleanupResponse{}, fmt.Errorf("build cleanup request: %w", err)
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
-	httpReq.Header.Set("X-BurnLink-Internal-Token", c.token)
+	httpReq.Header.Set("X-Flick-Internal-Token", c.token)
 
 	resp, err := c.httpClient.Do(httpReq)
 	if err != nil {
