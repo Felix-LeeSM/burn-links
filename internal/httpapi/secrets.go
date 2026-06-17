@@ -70,6 +70,10 @@ func (s Server) createSecret(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid_json", "request body does not match the create secret contract")
 		return
 	}
+	if decoder.Decode(&struct{}{}) != io.EOF {
+		writeError(w, http.StatusBadRequest, "invalid_json", "request body must contain exactly one JSON object")
+		return
+	}
 
 	ciphertext, err := base64.StdEncoding.DecodeString(req.Ciphertext)
 	if err != nil {

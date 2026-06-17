@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -89,6 +90,34 @@ func TestCreateRejectsSensitiveFields(t *testing.T) {
 	resp := performJSON(t, router, http.MethodPost, "/api/secrets", body)
 	if resp.Code != http.StatusBadRequest {
 		t.Fatalf("status = %d, body = %s", resp.Code, resp.Body.String())
+	}
+}
+
+func TestCreateRejectsTrailingJSON(t *testing.T) {
+	router := newTestRouter(t)
+
+	body := `{
+		"kind": "text",
+		"ciphertext": "Y2lwaGVydGV4dA==",
+		"nonce": "nonce",
+		"kdf": {
+			"algorithm": "PBKDF2-SHA-256",
+			"salt": "salt",
+			"iterations": 600000,
+			"key_length_bits": 256
+		},
+		"size_bytes": 10,
+		"ttl_seconds": 600
+	}{"passphrase":"do-not-send"}`
+
+	req := httptest.NewRequest(http.MethodPost, "/api/secrets", bytes.NewBufferString(body))
+	req.Header.Set("Content-Type", "application/json")
+	resp := httptest.NewRecorder()
+	router.ServeHTTP(resp, req)
+
+	if resp.Code != http.StatusBadRequest {
+		responseBody, _ := io.ReadAll(resp.Body)
+		t.Fatalf("status = %d, body = %s", resp.Code, string(responseBody))
 	}
 }
 
