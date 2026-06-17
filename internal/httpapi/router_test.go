@@ -14,11 +14,18 @@ import (
 	"time"
 
 	"github.com/Felix-LeeSM/burn-links/internal/db"
+	"github.com/Felix-LeeSM/burn-links/internal/events"
 	"github.com/Felix-LeeSM/burn-links/internal/secrets"
 )
 
 func TestSecretHTTPFlow(t *testing.T) {
-	router := newTestRouter(t)
+	fixture := newTestRouterFixture(t, Options{
+		PayloadInlineMaxBytes: 1024,
+		NewJobID: func() (string, error) {
+			return "job-consume-1", nil
+		},
+	})
+	router := fixture.router
 
 	createBody := map[string]any{
 		"kind":       "text",
@@ -58,6 +65,32 @@ func TestSecretHTTPFlow(t *testing.T) {
 	if consumeResp.Code != http.StatusAccepted {
 		t.Fatalf("consume status = %d, body = %s", consumeResp.Code, consumeResp.Body.String())
 	}
+	due, err := fixture.outbox.ListDue(context.Background(), time.Date(2026, 6, 17, 10, 1, 0, 0, time.UTC), 10)
+	if err != nil {
+		t.Fatalf("list due outbox events: %v", err)
+	}
+	if len(due) != 1 {
+		t.Fatalf("due outbox count = %d, want 1", len(due))
+	}
+	if due[0].Payload.JobID != "job-consume-1" {
+		t.Fatalf("outbox job id = %q, want job-consume-1", due[0].Payload.JobID)
+	}
+	if due[0].Payload.Kind != events.KindDeleteSecret || due[0].Payload.SecretID != created.ID || due[0].Payload.Reason != events.ReasonConsumed {
+		t.Fatalf("outbox payload = %+v, want consumed delete_secret for %q", due[0].Payload, created.ID)
+	}
+	for _, forbidden := range []string{"payload", "plaintext", "passphrase", "derived_key", "decrypt_key", "ciphertext"} {
+		if strings.Contains(due[0].PayloadJSON, forbidden) {
+			t.Fatalf("outbox payload contains forbidden value %q: %s", forbidden, due[0].PayloadJSON)
+		}
+	}
+
+	var payloadCount int
+	if err := fixture.db.QueryRowContext(context.Background(), `select count(*) from secret_payloads where secret_id = ?`, created.ID).Scan(&payloadCount); err != nil {
+		t.Fatalf("count payloads after consume: %v", err)
+	}
+	if payloadCount != 1 {
+		t.Fatalf("payload count after consume = %d, want 1 until cleanup job runs", payloadCount)
+	}
 
 	secondGetResp := performJSON(t, router, http.MethodGet, "/api/secrets/"+created.ID, nil)
 	if secondGetResp.Code != http.StatusGone {
@@ -67,6 +100,83 @@ func TestSecretHTTPFlow(t *testing.T) {
 	secondConsumeResp := performJSON(t, router, http.MethodPost, "/api/secrets/"+created.ID+"/consume", nil)
 	if secondConsumeResp.Code != http.StatusConflict {
 		t.Fatalf("second consume status = %d, body = %s", secondConsumeResp.Code, secondConsumeResp.Body.String())
+	}
+}
+
+func TestConsumeRollsBackWhenOutboxEnqueueFails(t *testing.T) {
+	ctx := context.Background()
+	now := time.Date(2026, 6, 17, 10, 0, 0, 0, time.UTC)
+	fixture := newTestRouterFixture(t, Options{
+		PayloadInlineMaxBytes: 1024,
+		NewJobID: func() (string, error) {
+			return "job-duplicate", nil
+		},
+	})
+
+	if _, err := fixture.outbox.Enqueue(ctx, events.JobEvent{
+		JobID:       "job-duplicate",
+		Kind:        events.KindBackupVerify,
+		RequestedAt: now,
+	}); err != nil {
+		t.Fatalf("seed duplicate outbox event: %v", err)
+	}
+
+	createResp := performJSON(t, fixture.router, http.MethodPost, "/api/secrets", validCreateSecretBody())
+	if createResp.Code != http.StatusCreated {
+		t.Fatalf("create status = %d, body = %s", createResp.Code, createResp.Body.String())
+	}
+	var created createSecretResponse
+	decodeBody(t, createResp, &created)
+
+	consumeResp := performJSON(t, fixture.router, http.MethodPost, "/api/secrets/"+created.ID+"/consume", nil)
+	if consumeResp.Code != http.StatusInternalServerError {
+		t.Fatalf("consume with duplicate outbox id status = %d, body = %s", consumeResp.Code, consumeResp.Body.String())
+	}
+
+	getResp := performJSON(t, fixture.router, http.MethodGet, "/api/secrets/"+created.ID, nil)
+	if getResp.Code != http.StatusOK {
+		t.Fatalf("get after failed outbox enqueue status = %d, body = %s", getResp.Code, getResp.Body.String())
+	}
+
+	due, err := fixture.outbox.ListDue(ctx, now, 10)
+	if err != nil {
+		t.Fatalf("list due outbox events: %v", err)
+	}
+	if len(due) != 1 || due[0].ID != "job-duplicate" {
+		t.Fatalf("due outbox records = %+v, want only seeded duplicate event", due)
+	}
+}
+
+func TestConsumeRequiresOutbox(t *testing.T) {
+	ctx := context.Background()
+	conn := openHTTPTestDB(t, ctx)
+	store, err := secrets.NewStore(conn, secrets.StoreOptions{
+		PayloadInlineMaxBytes: 1024,
+		AllowedTTLSeconds:     []int{600, 3600, 86400},
+	})
+	if err != nil {
+		t.Fatalf("new store: %v", err)
+	}
+	store.SetNowForTest(func() time.Time {
+		return time.Date(2026, 6, 17, 10, 0, 0, 0, time.UTC)
+	})
+	router := NewRouter(conn, store, Options{PayloadInlineMaxBytes: 1024})
+
+	createResp := performJSON(t, router, http.MethodPost, "/api/secrets", validCreateSecretBody())
+	if createResp.Code != http.StatusCreated {
+		t.Fatalf("create status = %d, body = %s", createResp.Code, createResp.Body.String())
+	}
+	var created createSecretResponse
+	decodeBody(t, createResp, &created)
+
+	consumeResp := performJSON(t, router, http.MethodPost, "/api/secrets/"+created.ID+"/consume", nil)
+	if consumeResp.Code != http.StatusInternalServerError {
+		t.Fatalf("consume without outbox status = %d, body = %s", consumeResp.Code, consumeResp.Body.String())
+	}
+
+	getResp := performJSON(t, router, http.MethodGet, "/api/secrets/"+created.ID, nil)
+	if getResp.Code != http.StatusOK {
+		t.Fatalf("get after failed consume status = %d, body = %s", getResp.Code, getResp.Body.String())
 	}
 }
 
@@ -226,10 +336,22 @@ func TestCleanupSecretRejectsInvalidMetadata(t *testing.T) {
 func newTestRouter(t *testing.T) http.Handler {
 	t.Helper()
 
-	return newTestRouterWithOptions(t, Options{PayloadInlineMaxBytes: 1024})
+	return newTestRouterFixture(t, Options{PayloadInlineMaxBytes: 1024}).router
 }
 
 func newTestRouterWithOptions(t *testing.T, opts Options) http.Handler {
+	t.Helper()
+
+	return newTestRouterFixture(t, opts).router
+}
+
+type testRouterFixture struct {
+	router http.Handler
+	db     *sql.DB
+	outbox *events.OutboxStore
+}
+
+func newTestRouterFixture(t *testing.T, opts Options) testRouterFixture {
 	t.Helper()
 
 	ctx := context.Background()
@@ -244,7 +366,20 @@ func newTestRouterWithOptions(t *testing.T, opts Options) http.Handler {
 	now := time.Date(2026, 6, 17, 10, 0, 0, 0, time.UTC)
 	store.SetNowForTest(func() time.Time { return now })
 
-	return NewRouter(conn, store, opts)
+	outbox, err := events.NewOutboxStore(conn, "burnlink.jobs")
+	if err != nil {
+		t.Fatalf("new outbox store: %v", err)
+	}
+	outbox.SetNowForTest(func() time.Time { return now })
+	if opts.OutboxStore == nil {
+		opts.OutboxStore = outbox
+	}
+
+	return testRouterFixture{
+		router: NewRouter(conn, store, opts),
+		db:     conn,
+		outbox: opts.OutboxStore,
+	}
 }
 
 func TestCORSAllowsConfiguredOrigin(t *testing.T) {

@@ -2,14 +2,18 @@ package httpapi
 
 import (
 	"bytes"
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 
+	"github.com/Felix-LeeSM/burn-links/internal/events"
 	"github.com/Felix-LeeSM/burn-links/internal/secrets"
 )
 
@@ -136,7 +140,7 @@ func (s Server) getSecret(w http.ResponseWriter, r *http.Request) {
 
 func (s Server) consumeSecret(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	if err := s.secrets.Consume(r.Context(), id); err != nil {
+	if err := s.consumeAndEnqueueCleanup(r.Context(), id); err != nil {
 		s.writeConsumeError(w, err)
 		return
 	}
@@ -145,6 +149,41 @@ func (s Server) consumeSecret(w http.ResponseWriter, r *http.Request) {
 		ID:       id,
 		Consumed: true,
 	})
+}
+
+func (s Server) consumeAndEnqueueCleanup(ctx context.Context, id string) error {
+	if s.outbox == nil {
+		return fmt.Errorf("outbox store is required")
+	}
+	jobID, err := s.newJobID()
+	if err != nil {
+		return err
+	}
+
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("begin consume cleanup transaction: %w", err)
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
+	if err := s.secrets.MarkConsumedTx(ctx, tx, id); err != nil {
+		return err
+	}
+	if _, err := s.outbox.EnqueueTx(ctx, tx, events.JobEvent{
+		JobID:       jobID,
+		Kind:        events.KindDeleteSecret,
+		SecretID:    id,
+		Reason:      events.ReasonConsumed,
+		RequestedAt: time.Now().UTC(),
+	}); err != nil {
+		return fmt.Errorf("enqueue consumed cleanup job: %w", err)
+	}
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("commit consume cleanup transaction: %w", err)
+	}
+	return nil
 }
 
 func (s Server) cleanupSecret(w http.ResponseWriter, r *http.Request) {

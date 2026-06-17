@@ -7,6 +7,7 @@ import (
 
 	"github.com/Felix-LeeSM/burn-links/internal/config"
 	"github.com/Felix-LeeSM/burn-links/internal/db"
+	"github.com/Felix-LeeSM/burn-links/internal/events"
 	"github.com/Felix-LeeSM/burn-links/internal/httpapi"
 	"github.com/Felix-LeeSM/burn-links/internal/secrets"
 )
@@ -36,6 +37,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("create secret store: %v", err)
 	}
+	outboxStore, err := events.NewOutboxStore(conn, cfg.NATSJobSubject)
+	if err != nil {
+		log.Fatalf("create outbox store: %v", err)
+	}
 
 	server := &http.Server{
 		Addr: cfg.APIAddr,
@@ -43,6 +48,7 @@ func main() {
 			PayloadInlineMaxBytes: cfg.PayloadInlineMaxBytes,
 			AllowedOrigin:         cfg.PublicBaseURL,
 			InternalToken:         cfg.InternalToken,
+			OutboxStore:           outboxStore,
 		}),
 	}
 
