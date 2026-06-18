@@ -25,6 +25,46 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate trusted publish source
+        shell: bash
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          REF_TYPE: ${{ github.ref_type }}
+        run: |
+          set -euo pipefail
+
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            if [ "$REF_TYPE" != "branch" ] || [ "$REF_NAME" != "$DEFAULT_BRANCH" ]; then
+              echo "manual image publish must run from $DEFAULT_BRANCH" >&2
+              exit 1
+            fi
+            exit 0
+          fi
+
+          if [ "$EVENT_NAME" = "push" ] && [ "$REF_TYPE" = "tag" ]; then
+            case "$REF_NAME" in
+              v*) ;;
+              *)
+                echo "tag image publish requires a v* tag" >&2
+                exit 1
+                ;;
+            esac
+
+            git fetch --no-tags origin "+refs/heads/$DEFAULT_BRANCH:refs/remotes/origin/$DEFAULT_BRANCH"
+            if ! git merge-base --is-ancestor HEAD "origin/$DEFAULT_BRANCH"; then
+              echo "tag image publish requires a commit already reachable from $DEFAULT_BRANCH" >&2
+              exit 1
+            fi
+            exit 0
+          fi
+
+          echo "unsupported image publish event: $EVENT_NAME on $REF_TYPE $REF_NAME" >&2
+          exit 1
 
       - uses: docker/setup-buildx-action@v3
 
@@ -70,6 +110,11 @@ jobs:
 
           if [ "${#image_tag}" -gt 128 ]; then
             echo "image tag is longer than 128 characters: $image_tag" >&2
+            exit 1
+          fi
+
+          if [[ ! "$image_tag" =~ ^(sha-[0-9a-f]{12}|v[0-9][A-Za-z0-9_.-]*)$ ]]; then
+            echo "image tag must be sha-<12-hex> or v<release>: $image_tag" >&2
             exit 1
           fi
 
