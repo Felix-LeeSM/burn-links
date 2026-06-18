@@ -81,6 +81,10 @@ jobs:
             echo "DOCKERHUB_NAMESPACE repository variable is required" >&2
             exit 1
           fi
+          if [[ ! "$namespace" =~ ^([a-z0-9]|[a-z0-9][a-z0-9._-]{0,253}[a-z0-9])$ ]]; then
+            echo "DOCKERHUB_NAMESPACE must be one lowercase Docker Hub namespace component" >&2
+            exit 1
+          fi
 
           short_sha="$(git rev-parse --short=12 HEAD)"
           sha_tag="sha-$short_sha"
@@ -108,6 +112,10 @@ jobs:
 
           if [[ ! "$image_tag" =~ ^(sha-[0-9a-f]{12}|v[0-9][A-Za-z0-9_.-]*)$ ]]; then
             echo "image tag must be sha-<12-hex> or v<release>: $image_tag" >&2
+            exit 1
+          fi
+          if [[ "$image_tag" == sha-* && "$image_tag" != "$sha_tag" ]]; then
+            echo "sha-* image tag must match the checked-out commit: $sha_tag" >&2
             exit 1
           fi
 

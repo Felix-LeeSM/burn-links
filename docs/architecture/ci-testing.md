@@ -146,4 +146,6 @@ Docker Hub:
 - manual publishes must run from the repository default branch
 - tag publishes must use a `v*` tag whose commit is already reachable from the
   repository default branch
-- manual custom tags must match `sha-<12-hex>` or `v<release>`
+- `DOCKERHUB_NAMESPACE` must be one lowercase Docker Hub namespace component
+- manual custom tags must match `v<release>`, or `sha-<12-hex>` only when it is
+  the checked-out commit SHA tag

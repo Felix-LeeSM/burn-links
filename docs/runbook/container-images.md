@@ -115,8 +115,9 @@ git push origin v0.1.0
 
 Manual publishes must run from the repository default branch. Tag publishes must
 use a `v*` tag whose commit is already reachable from the default branch. Custom
-manual tags are limited to `sha-<12-hex>` or `v<release>` forms; `latest` and
-other mutable aliases are rejected.
+manual tags are limited to `v<release>` or the checked-out commit's exact
+`sha-<12-hex>` tag; `latest` and other mutable aliases are rejected. The Docker
+Hub namespace must be one lowercase namespace component.
 
 The workflow publishes:
 
