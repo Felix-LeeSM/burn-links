@@ -167,6 +167,7 @@ respective code is initialized.
 - [CI and testing](docs/architecture/ci-testing.md)
 - [Agent workflow](docs/architecture/agent-workflow.md)
 - [Container images](docs/runbook/container-images.md)
+- [OCI Free Tier deployment](docs/runbook/oci-free-tier.md)
 - [k3s base manifests](docs/runbook/k3s-base.md)
 - [k3d smoke](docs/runbook/k3d-smoke.md)
 - [Local development](docs/runbook/local-dev.md)

@@ -63,6 +63,9 @@ kustomize edit set image \
 Do not commit deployment-specific registry names when they reveal private
 deployment details.
 
+For an end-to-end OCI Free Tier-style deployment checklist, use
+[OCI Free Tier deployment](oci-free-tier.md).
+
 ## Config
 
 `ConfigMap/flick-config` contains non-secret runtime defaults:
