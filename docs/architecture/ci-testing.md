@@ -140,7 +140,8 @@ DOCKERHUB_TOKEN
 Production overlays should consume immutable `sha-*` tags or explicit `v*`
 release tags, not `latest`.
 
-The publish workflow validates the source before logging in to Docker Hub:
+The publish workflow validates the source and image tags before logging in to
+Docker Hub:
 
 - manual publishes must run from the repository default branch
 - tag publishes must use a `v*` tag whose commit is already reachable from the

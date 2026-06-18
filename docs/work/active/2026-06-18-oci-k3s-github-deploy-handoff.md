@@ -4,11 +4,14 @@ This handoff covers deployment work that cannot be completed from the local
 repository because it requires real OCI instances, DNS, SSH, firewall rules, and
 a private production overlay.
 
-Target public domain:
+Target public domain placeholder:
 
 ```text
-flick.dev-felix.work
+<production-domain>
 ```
+
+The real domain is a private ops value. Keep it out of the public repository and
+public GitHub issue/PR text.
 
 Public image namespace:
 
@@ -29,8 +32,8 @@ Public repo work available after issue #63:
   - `DOCKERHUB_TOKEN`
 
 The public repo must not contain real OCI credentials, kubeconfig, SSH private
-keys, internal tokens, production domains beyond documentation, private overlay
-values, database files, PVC dumps, or backup archives.
+keys, internal tokens, production domains, private overlay values, database
+files, PVC dumps, or backup archives.
 
 ## Target Topology
 
@@ -52,7 +55,7 @@ flick-edge
 
 This avoids running separate service islands. Kubernetes service discovery keeps
 `flick-worker` talking to `flick-api` through `http://flick-api:8080`, and the
-public ingress terminates at `flick.dev-felix.work`.
+public ingress terminates at the private ops `FLICK_DOMAIN` value.
 
 ## OCI Prerequisites
 
@@ -62,7 +65,7 @@ k3s control-plane and pod networking.
 DNS:
 
 ```text
-flick.dev-felix.work A <flick-core-public-ip>
+<production-domain> A <flick-core-public-ip>
 ```
 
 Do not point the domain at both instances with round-robin A records for the
@@ -152,7 +155,7 @@ environment variables are missing.
 Use these private env vars in the ops repo, not in the public repo:
 
 ```text
-FLICK_DOMAIN=flick.dev-felix.work
+FLICK_DOMAIN=<production-domain>
 FLICK_IMAGE_NAMESPACE=haradwaith
 FLICK_IMAGE_TAG=sha-<short-sha>
 FLICK_INTERNAL_TOKEN=<strong-random-token>
@@ -316,11 +319,14 @@ for name in "${required[@]}"; do
   fi
 done
 
-kustomize build overlays/production |
-  tee /tmp/flick-production.yaml |
-  kubectl apply --dry-run=client --validate=false -f -
+rendered_manifest="$(mktemp)"
+trap 'rm -f "$rendered_manifest"' EXIT
+chmod 600 "$rendered_manifest"
 
-if grep -E 'replace-me-before-use|docker.io/example|flick.localhost' /tmp/flick-production.yaml; then
+kustomize build overlays/production >"$rendered_manifest"
+kubectl apply --dry-run=client --validate=false -f "$rendered_manifest"
+
+if grep -E 'replace-me-before-use|docker.io/example|flick.localhost' "$rendered_manifest"; then
   echo "rendered manifest still contains public placeholders" >&2
   exit 1
 fi
@@ -358,8 +364,8 @@ images:
   docker.io/example/flick-web    -> docker.io/haradwaith/flick-web:<tag>
 
 ConfigMap/flick-config:
-  FLICK_PUBLIC_BASE_URL=https://flick.dev-felix.work
-  FLICK_API_BASE_URL=https://flick.dev-felix.work
+  FLICK_PUBLIC_BASE_URL=https://<production-domain>
+  FLICK_API_BASE_URL=https://<production-domain>
   FLICK_INTERNAL_API_BASE_URL=http://flick-api:8080
   FLICK_STORAGE_LARGE_BACKEND=disabled
 
@@ -367,7 +373,7 @@ Secret/flick-secrets:
   FLICK_INTERNAL_TOKEN=<strong-random-token>
 
 Ingress/flick:
-  host=flick.dev-felix.work
+  host=<production-domain>
   tls.secretName=flick-tls
   cert-manager.io/cluster-issuer=letsencrypt-prod
 
