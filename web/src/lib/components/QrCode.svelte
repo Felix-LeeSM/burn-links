@@ -23,7 +23,11 @@ const svg = $derived(
 );
 </script>
 
-<div class={cn('qr grid place-items-center overflow-hidden', className)}>
+<div
+	role="img"
+	aria-label="QR code for the secret share link"
+	class={cn('qr grid place-items-center overflow-hidden', className)}
+>
 	{#if svg.length > 0}
 		<!-- eslint-disable-next-line svelte/no-at-html-tags -- uqr renders a static, trusted SVG from local input. -->
 		{@html svg}

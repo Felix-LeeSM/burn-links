@@ -89,6 +89,15 @@ const canOpen = $derived(
 	!isOpening && !hasOpened && (accessModel === 'b' ? linkKey !== null : passphrase.length > 0)
 );
 
+let secretHeading = $state<HTMLHeadingElement | null>(null);
+
+// Move focus to the secret heading when the result view replaces the form.
+$effect(() => {
+	if (hasOpened) {
+		secretHeading?.focus();
+	}
+});
+
 onDestroy(() => {
 	revokeDownloadUrl();
 });
@@ -245,7 +254,13 @@ function formatBytes(bytes: number): string {
 						<CheckIcon class="size-3.5" />
 						decrypted · burns after read
 					</p>
-					<h1 class="font-serif text-3xl sm:text-4xl">Secret</h1>
+					<h1
+						class="font-serif text-3xl sm:text-4xl"
+						tabindex="-1"
+						bind:this={secretHeading}
+					>
+						Secret
+					</h1>
 				</div>
 
 				{#if openedKind === 'text' && credential}
@@ -411,6 +426,8 @@ function formatBytes(bytes: number): string {
 							class:text-muted-foreground={statusKind === 'idle'}
 							class:text-success={statusKind === 'success'}
 							class:text-destructive={statusKind === 'error'}
+							role={statusKind === 'error' ? 'alert' : 'status'}
+							aria-live={statusKind === 'error' ? 'assertive' : 'polite'}
 						>
 							{status}
 						</p>

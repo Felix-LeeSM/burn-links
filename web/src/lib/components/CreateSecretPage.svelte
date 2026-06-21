@@ -108,6 +108,14 @@ let status = $state('');
 let statusKind = $state<StatusKind>('idle');
 let isCreating = $state(false);
 let qrOpen = $state(false);
+let successHeading = $state<HTMLHeadingElement | null>(null);
+
+// Move focus to the success heading when the result panel replaces the form.
+$effect(() => {
+	if (hasResult) {
+		successHeading?.focus();
+	}
+});
 
 // 1s tick drives the expiry countdown in the success panel.
 let nowTick = $state(Date.now());
@@ -362,7 +370,13 @@ function credentialIcon(icon: string): typeof ListPlusIcon {
 							<FlameIcon class="size-3.5" />
 							one-time link
 						</p>
-						<h1 class="font-serif text-3xl sm:text-4xl">Link created</h1>
+						<h1
+							class="font-serif text-3xl sm:text-4xl"
+							tabindex="-1"
+							bind:this={successHeading}
+						>
+							Link created
+						</h1>
 						<p class="text-sm text-muted-foreground">Opens once, then burns. Forward it fast.</p>
 					</div>
 					<div class="flex items-center gap-2 font-mono text-sm text-muted-foreground">
@@ -579,7 +593,7 @@ function credentialIcon(icon: string): typeof ListPlusIcon {
 									aria-label="Custom lifetime value"
 									placeholder="2"
 									value={customValue > 0 ? customValue : ''}
-									class="w-7 border-0 bg-transparent p-0 text-center font-mono text-xs leading-none outline-none sm:text-sm"
+									class="min-w-10 border-0 bg-transparent p-0 text-center font-mono text-xs leading-none outline-none sm:text-sm"
 									disabled={isCreating}
 									onfocus={() => (customActive = true)}
 									oninput={(event) => {
