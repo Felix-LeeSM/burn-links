@@ -27,24 +27,26 @@ Initial thresholds:
 ```text
 text secret: api.db BLOB
 file <= 1 MiB: api.db BLOB
-file > 1 MiB: OCI Object Storage when enabled
+file > 1 MiB: S3-compatible object storage when enabled
 max file size: 25 MiB
 ```
 
 The local web flow accepts files only up to the SQLite inline threshold while
-OCI large-object storage is disabled.
+large-object storage is disabled.
 
 Filesystem storage is not a persistent backend. It is allowed only for temporary
 upload files, local scratch, and test fixtures.
 
-## OCI Object Storage
+## Large-Object Storage
 
-OCI is tested with a real development bucket, not MinIO. MinIO is S3-compatible,
-not an OCI simulator, and is not part of the default local development path.
+Large-object storage speaks the S3 API via the AWS SDK for Go v2
+(`internal/storage`). Any S3-compatible provider works — MinIO dev, OCI
+S3-compatibility prod, AWS S3, Cloudflare R2 — and MinIO is the integration-test
+double (`minio_integration_test.go`).
 
 Object Storage receives browser-encrypted ciphertext only. Bucket names,
-credentials, pre-authenticated URLs, and production domains must not be committed
-to the public repository.
+credentials, presigned URLs, and production domains must not be committed to the
+public repository.
 
 ## Deletion Semantics
 
@@ -59,5 +61,5 @@ Cleanup jobs are idempotent:
 
 - missing secret: success
 - missing SQLite payload: success
-- missing OCI object: success
+- missing object-storage object: success
 - already consumed/expired: success

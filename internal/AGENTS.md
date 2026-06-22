@@ -6,7 +6,7 @@ These packages are code boundaries, not service boundaries.
 - `db`: SQLite connection setup, migrations, transaction helpers.
 - `httpapi`: HTTP routing, handlers, request/response mapping.
 - `secrets`: secret lifecycle domain logic.
-- `storage`: SQLite BLOB and OCI Object Storage adapters.
+- `storage`: S3-compatible object storage for large payloads (SQLite BLOB lives in `internal/secrets`).
 - `events`: NATS JetStream publishing and consuming contracts.
 - `worker`: worker job execution and retry/idempotency logic.
 - `telemetry`: logs, metrics, tracing.
