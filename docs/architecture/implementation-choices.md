@@ -53,17 +53,19 @@ If real workload testing exposes compatibility or performance issues, reassess
 ## Object Storage
 
 ```text
-Provider: OCI Object Storage
-SDK: OCI Go SDK
-Local simulator: none by default
+Provider: S3-compatible (MinIO dev, OCI S3-compatibility prod, AWS S3, R2 portable)
+SDK: AWS SDK for Go v2
+Local test double: MinIO (internal/storage/minio_integration_test.go)
 ```
 
 Rationale:
 
-- Flick targets OCI deployment and should verify behavior against a real OCI
-  development bucket.
-- MinIO is S3-compatible, not an OCI simulator, so it is not the default test
-  double for OCI behavior.
+- Large payloads are written through the S3 API directly via the AWS SDK for Go
+  v2, so any S3-compatible provider works — MinIO dev, OCI S3-compatibility prod,
+  AWS S3, Cloudflare R2. See `internal/storage/AGENTS.md` and `env-contract.md`.
+- MinIO is the integration-test double: it is the only proof the manual presigned
+  POST signing (`internal/storage/presigned.go`) interoperates with a real S3
+  endpoint. The AWS SDK v2 only supports presigned PUT, hence the manual path.
 
 ## Containers
 
