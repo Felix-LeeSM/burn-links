@@ -25,8 +25,10 @@ on `DefaultRegistry` in `init()`:
   (upload confirmed) and in the reaper (pending_upload orphan reclaimed).
 
 `MetricsHandler()` serves the Prometheus text exposition format; mounted on
-`/metrics` by `internal/httpapi/router.go` (API and worker each serve only the
-instruments their process increments). A bucket-size gauge is intentionally
+`/metrics` by `internal/httpapi/router.go` in the API process. (The worker
+process increments `flick_jobs_processed_total` but does not run an HTTP
+server today, so that counter is only exposed when a future worker `/metrics`
+endpoint is added.) A bucket-size gauge is intentionally
 omitted: computing it needs a full `ListObjectsV2` scan on every scrape, too
 costly for a health endpoint — deferred until a dedicated inventory sweep is
 justified.

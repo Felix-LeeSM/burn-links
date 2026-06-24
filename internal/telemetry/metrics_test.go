@@ -5,34 +5,17 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-
-	"github.com/prometheus/client_golang/prometheus/testutil"
 )
 
-// All instruments must be registered on DefaultRegistry, otherwise /metrics
-// would not expose them. This guards against a future init() that forgets a
-// metric declared above.
-func TestInstrumentsRegistered(t *testing.T) {
-	for name, c := range map[string]int{
-		"flick_secret_created_total": testutil.CollectAndCount(SecretCreated),
-		"flick_secret_opened_total":  testutil.CollectAndCount(SecretOpened),
-		"flick_secret_reaped_total":  testutil.CollectAndCount(SecretReaped),
-		"flick_jobs_processed_total": testutil.CollectAndCount(JobsProcessed),
-		"flick_active_uploads":       testutil.CollectAndCount(ActiveUploads),
-	} {
-		if c < 0 {
-			t.Errorf("%s is not registered on DefaultRegistry", name)
-		}
-		// CollectAndCount returns the number of labelled samples, which is 0
-		// until a label vector is touched. That is fine; the important property
-		// is that Collect does not error (an unregistered collector would).
-	}
-}
-
+// scrape touches every instrument so it has a sample, then asserts the
+// Prometheus exposition format emits each family with the expected label
+// vector. This proves three things at once: the instrument is declared,
+// registered on DefaultRegistry (an unregistered collector would panic at
+// Inc), and actually surfaced on /metrics.
 func TestMetricsHandlerExposesFormat(t *testing.T) {
-	// Touch a few label vectors so the handler has samples to emit, then scrape.
 	SecretCreated.WithLabelValues("text", "sqlite_blob").Inc()
 	SecretOpened.Inc()
+	SecretReaped.WithLabelValues("expired").Inc()
 	JobsProcessed.WithLabelValues("delete_secret", "succeeded").Inc()
 	ActiveUploads.Inc()
 
@@ -51,10 +34,15 @@ func TestMetricsHandlerExposesFormat(t *testing.T) {
 	for _, want := range []string{
 		"# HELP flick_secret_created_total",
 		"# TYPE flick_secret_created_total counter",
-		"# HELP flick_secret_opened_total",
-		"# HELP flick_jobs_processed_total",
-		"# TYPE flick_active_uploads gauge",
 		"flick_secret_created_total{kind=\"text\",storage=\"sqlite_blob\"} 1",
+		"# HELP flick_secret_opened_total",
+		"flick_secret_opened_total 1",
+		"# HELP flick_secret_reaped_total",
+		"flick_secret_reaped_total{reason=\"expired\"} 1",
+		"# HELP flick_jobs_processed_total",
+		"flick_jobs_processed_total{kind=\"delete_secret\",outcome=\"succeeded\"} 1",
+		"# TYPE flick_active_uploads gauge",
+		"flick_active_uploads 1",
 	} {
 		if !strings.Contains(body, want) {
 			t.Errorf("metrics body missing %q\n--- body ---\n%s", want, body)
@@ -62,10 +50,9 @@ func TestMetricsHandlerExposesFormat(t *testing.T) {
 	}
 }
 
-// Security invariant (security-model.md): the exposition must never carry a
-// plaintext secret, passphrase, or derived key. We assert that none of the
-// label names or HELP texts leak those terms, and that the only values emitted
-// are safe cardinality labels.
+// Security invariant (security-model.md: "Logs and metrics must not include
+// plaintext, passphrases, derived keys, or ciphertext bodies"). The exposition
+// must never carry those terms — only safe cardinality labels.
 func TestMetricsHandlerNoSecretTerms(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/metrics", nil)
 	rec := httptest.NewRecorder()
