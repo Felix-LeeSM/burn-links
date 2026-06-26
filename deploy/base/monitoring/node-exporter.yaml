@@ -97,7 +97,7 @@ spec:
 ---
 # Headless so each node-exporter instance is individually addressable (the
 # future VictoriaMetrics scrape targets every endpoint, not one load-balanced
-# pick). With hostNetwork the endpoint addresses are the node IPs.
+# pick). The endpoint addresses are the pod overlay IPs.
 apiVersion: v1
 kind: Service
 metadata:

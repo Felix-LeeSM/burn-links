@@ -58,10 +58,12 @@ spec:
 ## node-exporter — node/instance metrics
 
 A DaemonSet (one pod per node, control-plane included via a blanket toleration)
-exposing host CPU, memory, filesystem, disk, and network metrics on `:9100`. It
-runs in the host network and PID namespaces with read-only host `/proc`, `/sys`,
-and `/` mounts so the series reflect the node, not the pod sandbox. No API
-access, so no RBAC. Footprint ~16Mi request, 48Mi limit per node.
+exposing host CPU, memory, filesystem, disk, and network metrics on `:9100`. The
+series reflect the node, not the pod sandbox, because it reads read-only host
+`/proc`, `/sys`, and `/` mounts (`--path.*`). It runs on the pod overlay network
+(not hostNetwork) so it stays scrapeable cross-node despite this cluster's
+node-IP:9100 firewall. No API access, so no RBAC. Footprint ~16Mi request, 48Mi
+limit per node (~3-14Mi RSS measured).
 
 ### Inspect
 
