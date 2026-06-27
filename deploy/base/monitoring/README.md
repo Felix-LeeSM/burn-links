@@ -105,7 +105,9 @@ needs **no API access and no RBAC**:
 The `flick-api` scrape sends `Authorization: Bearer <flick-secrets/FLICK_METRICS_TOKEN>`.
 With the base placeholder (`replace-me-before-use`) the API returns **401** and the
 `flick-api` target stays down; set the real `FLICK_METRICS_TOKEN` in the private
-overlay (the same value the API runs with). The other two targets are
+overlay (the same value the API runs with). Set it with **no trailing newline**
+(e.g. `printf %s "$token"`, not `echo`): the API compares the raw token, so a
+stray `\n` in the Secret value breaks the scrape. The other two targets are
 unauthenticated.
 
 ### Apply and inspect
