@@ -47,4 +47,10 @@ func TestRouterRecoversFromHandlerPanic(t *testing.T) {
 	if resp.Code != http.StatusInternalServerError {
 		t.Fatalf("status = %d, want 500 from recovered panic", resp.Code)
 	}
+	// Headline property: headers set by the outer middleware survive the panic
+	// unwind, so even a recovered 500 still carries nosniff (Recoverer is mounted
+	// outside cors).
+	if got := resp.Header().Get("X-Content-Type-Options"); got != "nosniff" {
+		t.Errorf("recovered-panic response X-Content-Type-Options = %q, want nosniff", got)
+	}
 }
