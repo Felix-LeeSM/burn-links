@@ -8,6 +8,7 @@ import (
 	"github.com/Felix-LeeSM/flick-drop/internal/telemetry"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 const DefaultMaxAttempts = 3
@@ -70,14 +71,23 @@ func NewProcessor(store *ReceiptStore, handler JobHandler, opts ProcessorOptions
 }
 
 func (p *Processor) Process(ctx context.Context, payloadJSON []byte) (_ ProcessResult, err error) {
-	ctx, span := tracer.Start(ctx, "worker.Process")
+	event, decodeErr := events.DecodeJobEvent(payloadJSON)
+	if decodeErr != nil {
+		// Malformed message: no kind or trace context to attach. Return pre-span
+		// (the consumer terminates it) rather than emit an orphan worker span.
+		return ProcessResult{}, decodeErr
+	}
+
+	// Continue the producer's trace across the async NATS hop (#133): a child of
+	// the enqueuing span when the job carries a trace context, else a root.
+	// SpanKindConsumer marks the receive side of the messaging link.
+	ctx = events.ContextWithTrace(ctx, event)
+	ctx, span := tracer.Start(ctx, "worker.Process",
+		trace.WithSpanKind(trace.SpanKindConsumer),
+		trace.WithAttributes(attribute.String("job.kind", event.Kind)),
+	)
 	defer func() { telemetry.EndSpan(span, err) }()
 
-	event, err := events.DecodeJobEvent(payloadJSON)
-	if err != nil {
-		return ProcessResult{}, err
-	}
-	span.SetAttributes(attribute.String("job.kind", event.Kind))
 	canonicalPayload, err := event.JSON()
 	if err != nil {
 		return ProcessResult{}, err
