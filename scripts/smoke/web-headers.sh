@@ -37,6 +37,16 @@ require "X-Content-Type-Options"       '^x-content-type-options:[[:space:]]*nosn
 require "Referrer-Policy"              '^referrer-policy:[[:space:]]*no-referrer'
 require "Permissions-Policy"           '^permissions-policy:'
 
+# connect-src is the exfiltration control; a wildcard or scheme-only source
+# (`*`, `http:`, `https:`) would defeat it. Concrete origins (scheme://host) pass.
+connect_src="$(printf '%s' "$headers" | grep -ioE 'connect-src[^;]*' || true)"
+if printf '%s' "$connect_src" | grep -qE '(^|[[:space:]])(\*|https?:)([[:space:]]|$)'; then
+	echo "web-headers: OVER-PERMISSIVE connect-src ($connect_src)" >&2
+	fail=1
+else
+	echo "web-headers: ok   connect-src not wildcarded"
+fi
+
 if [ "$fail" -ne 0 ]; then
 	echo "web-headers: one or more security headers are missing" >&2
 	exit 1
