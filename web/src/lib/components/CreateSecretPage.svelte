@@ -648,7 +648,10 @@ function credentialIcon(icon: string): typeof ListPlusIcon {
 							<LockKeyholeIcon class="size-4" aria-hidden="true" />
 							{isCreating ? 'Creating' : 'Create link'}
 						</Button>
-						{#if isCreating}
+						<!-- Cancel only during the S3 upload leg: abort stops just the
+						     in-flight POST, so it's a no-op (and a confusing flash) during
+						     encryption or a sub-second inline create. -->
+						{#if statusKind === 'uploading'}
 							<Button
 								type="button"
 								variant="outline"
